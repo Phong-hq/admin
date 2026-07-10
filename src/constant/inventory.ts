@@ -1,0 +1,12 @@
+export enum  INVENTORY_MANAGER_CODE {
+  RECEIPT = 'IRN',
+  ISSUER = 'ISN',
+  STOCK_TAKING = 'STON',
+}
+
+export enum  INVENTORY_MANAGER_TYPE {
+  RECEIPT = 1,
+  ISSUER = 2,
+  STOCK_TAKING = 3,
+}
+

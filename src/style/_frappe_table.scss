@@ -1,0 +1,48 @@
+.datatable {
+  padding-bottom: 12px;
+  .dt-header {
+    .dt-row {
+      border-bottom: none !important;
+    }
+  }
+
+  .dt-scrollable {
+    padding-bottom: 10px;
+    border-top: none !important;
+    .dt-row {
+      &:last-child {
+        transform: translateY(-1px);
+      }
+    }
+    .dt-scrollable__no-data {
+      border: 1px solid var(--dt-border-color);
+      background: #fff;
+    }
+  }
+  .dt-cell {
+    // height: max-content !important;
+    // min-height: 40px;
+    &.dt-cell--header {
+      height: 40px !important;
+    }
+    .dt-cell__content {
+      min-width: 28px;
+    }
+  }
+}
+
+.checkbox-column {
+  .datatable {
+    .dt-cell {
+      &.dt-cell--col-0 {
+        .dt-cell__content {
+          //CHECHBOX CSS
+          padding-left: 0px;
+          padding-right: 0px;
+          min-width: 28px;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
