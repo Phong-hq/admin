@@ -142,7 +142,7 @@ import { DATE_REQUEST_FORMAT } from '@/utils/dayjs-helper'
 import CImage from '@/components/common/upload/CImage.vue'
 import CSelect from '@/components/common/select/CSelect.vue'
 import CEditor from '@/components/common/editor/CEditor.vue'
-import RelationInput from './record/RelationInput.vue'
+import RelationInput from './record/RelationInputSelect.vue'
 import CJsonEditor from '@/components/common/input/CJsonEditor.vue'
 //PINIA
 import { useCmsStore } from '@/stores/cms'

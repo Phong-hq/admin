@@ -1,8 +1,14 @@
 <template>
-  <a-button type="primary" @click="open = true">Thêm mô tả sản phẩm</a-button>
-  <a-modal title="Thêm mô tả" v-model:open="open" :bodyStyle="{ padding: '16px' }" :width="1400">
+  <a-button type="primary" @click="showModal">Thêm mô tả sản phẩm</a-button>
+  <a-modal
+    title="Thêm mô tả"
+    v-model:open="open"
+    :bodyStyle="{ padding: '16px' }"
+    :width="1400"
+    @ok="handleOk"
+  >
     <a-form
-      :model="formState"
+      :model="noteState"
       class="form-2"
       ref="formRef"
       name="basic"
@@ -13,11 +19,11 @@
       autocomplete="off"
     >
       <a-form-item class="!col-span-2" label="Mô tả" name="description">
-        <CEditor class="[max-h-600px]" v-model="formState.description" />
+        <CEditor class="[max-h-600px]" v-model="noteState.description" />
       </a-form-item>
 
       <a-form-item class="!col-span-2" label="Mô tả ngắn" name="short_description">
-        <a-input v-model:value="formState.short_description" />
+        <a-input v-model:value="noteState.short_description" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -41,23 +47,13 @@ type FORM = {
 }
 
 type Props = {
-  modelValue: FORM
   isEdit?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {})
+withDefaults(defineProps<Props>(), {})
 
-const emits = defineEmits<{
-  (e: 'updateModelValue', id: FORM): void
-}>()
-
-const formState = computed<FORM>({
-  set(value: FORM) {
-    emits('updateModelValue', value)
-  },
-  get() {
-    return props.modelValue
-  }
+const modelValue = defineModel<FORM>({
+  default: () => ({ description: '', short_description: '' })
 })
 
 const rules = computed(() => {
@@ -67,6 +63,23 @@ const rules = computed(() => {
 
 const open = ref<boolean>(false)
 const formRef = ref<any>(null)
+
+const noteState = reactive<FORM>({
+  short_description: '',
+  description: ''
+})
+
+const showModal = () => {
+  noteState.description = modelValue.value?.description || ''
+  noteState.short_description = modelValue.value?.short_description || ''
+  open.value = true
+}
+
+const handleOk = async () => {
+  await formRef.value?.validate()
+  Object.assign(modelValue.value, noteState)
+  open.value = false
+}
 
 const validate = async () => {
   return await formRef.value?.validate()
