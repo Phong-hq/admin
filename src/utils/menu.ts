@@ -91,7 +91,11 @@ export const listMenu = [
       getItem(
         'Khách hàng',
         'customer',
-        [getItem('Khách hàng', 'person'), getItem('Liên hệ', 'contact-list')],
+        [
+          getItem('Khách hàng', 'person'),
+          getItem('Liên hệ', 'contact-list'),
+          getItem('Phản hồi', 'feedback-list')
+        ],
         'group'
       )
     ],

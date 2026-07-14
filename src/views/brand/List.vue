@@ -5,9 +5,7 @@
       <div class="flex justify-between items-center mb-2">
         <p class="heading-1">Nhãn hiệu</p>
         <div class="flex gap-2">
-          <!-- <a-button
-            ><template #icon><file-excel-outlined /></template
-          ></a-button> -->
+          <import-button :action="importBrand" @success="initData" />
           <a-button type="primary" @click="addBrandDrawerRef?.show()">
             <template #icon>
               <plus-outlined />
@@ -95,13 +93,14 @@ import CSelectSearch from '@/components/common/select/CSelectSearch.vue'
 import BoxCreatedTime from '@/components/common/table/BoxCreatedTime.vue'
 import AddBrandDrawer from './AddBrandDrawer.vue'
 import CBreadcrumb from '@/components/common/breadcrumb/CBreadcrumb.vue'
+import ImportButton from '@/components/common/button/ImportButton.vue'
 
 const brandStore = useBrandStore()
 const rootStore = useRootStore()
 const selectDataStore = useSelectDataStore()
 const router = useRouter()
 
-const { getBrandList, updateBrand, deleteBrand } = brandStore
+const { getBrandList, updateBrand, deleteBrand, importBrand } = brandStore
 
 const brandList = computed(() => brandStore.brandList)
 const meta = computed(() => brandStore.brandMeta)

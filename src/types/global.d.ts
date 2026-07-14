@@ -19,6 +19,12 @@ declare global {
     _meta: MetaResponse
   } & Extra
 
+  declare type ImportResponse = {
+    success: number
+    skipped: number
+    errors: any[]
+  }
+
   // PROMISE
   declare type Resolve = typeof ReturnType<Promise.resolve>
   declare type Reject = typeof ReturnType<Promise.reject>

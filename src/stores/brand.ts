@@ -47,6 +47,23 @@ export const useBrandStore = defineStore('brandStore', {
         }
       })
     },
+    importBrand(file: File): Promise<ImportResponse> {
+      return new Promise<ImportResponse>(async (resolve, reject) => {
+        try {
+          const formData = new FormData()
+          formData.append('file', file)
+          const res: ImportResponse = await axios.post(
+            '/api/v1/admin/product/brand-import/import',
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+          )
+          this.reloadSelectList()
+          resolve(res)
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     deleteBrand(id: any): Promise<any> {
       return new Promise<any>(async (resolve, reject) => {
         try {

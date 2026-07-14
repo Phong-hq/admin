@@ -80,6 +80,22 @@ export const useProductStore = defineStore('productStore', {
         }
       })
     },
+    importProduct(file: File): Promise<any> {
+      return new Promise<any>(async (resolve, reject) => {
+        try {
+          const formData = new FormData()
+          formData.append('file', file)
+          // TODO: chưa có API, tạm để sẵn endpoint
+          const res: any = await axios.post('/api/v1/admin/product/item/import', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          })
+          this.reloadSelectList()
+          resolve(res)
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     deleteProductItem(id: any): Promise<any> {
       return new Promise<any>(async (resolve, reject) => {
         try {

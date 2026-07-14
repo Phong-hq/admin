@@ -1,4 +1,4 @@
-<template>
+  <template>
   <div>
     <div class="flex justify-between items-center gap-7 mb-2">
       <p class="heading-1">Liên hệ</p>

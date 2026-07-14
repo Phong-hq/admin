@@ -5,6 +5,7 @@
       <div class="flex justify-between items-center">
         <p class="heading-1">Danh mục</p>
         <div class="flex gap-2">
+          <import-button :action="importCategory" @success="initData" />
           <a-button type="primary" @click="addCategoryDrawerRef?.show()">
             <template #icon>
               <plus-outlined />
@@ -76,12 +77,13 @@ import BoxAction from '@/components/common/table/BoxAction.vue'
 import BoxCreatedTime from '@/components/common/table/BoxCreatedTime.vue'
 import AddCategoryDrawer from './AddCategoryDrawer.vue'
 import CBreadcrumb from '@/components/common/breadcrumb/CBreadcrumb.vue'
+import ImportButton from '@/components/common/button/ImportButton.vue'
 
 const categoryStore = useCategoryStore()
 const rootStore = useRootStore()
 const router = useRouter()
 
-const { getCategoryList, deleteCategory, updateCategory } = categoryStore
+const { getCategoryList, deleteCategory, updateCategory, importCategory } = categoryStore
 const { confirm } = rootStore
 
 const categoriesList = computed(() => categoryStore.categoriesList)

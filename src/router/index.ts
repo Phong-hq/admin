@@ -374,6 +374,14 @@ const router = createRouter({
           meta: {
             breadcrumb: [{ label: 'Liên hệ' }]
           } as RouteMeta
+        },
+        {
+          path: '/feedback/list',
+          name: 'feedback-list',
+          component: () => import('@/views/feedback/List.vue'),
+          meta: {
+            breadcrumb: [{ label: 'Phản hồi' }]
+          } as RouteMeta
         }
 
         // {

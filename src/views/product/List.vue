@@ -6,6 +6,7 @@
         <p class="heading-1 !mb-0 sm:w-auto w-full">Sản phẩm</p>
         <div class="sm:flex sm:justify-end grid grid-cols-1 gap-2 sm:w-auto w-full">
           <export-button :action="exportProduct" name="sản-phẩm" />
+          <import-button :action="importProduct" @success="initData" />
           <a-button type="primary" @click="router.push({ name: 'product-create' })">
             <template #icon>
               <plus-outlined />
@@ -137,13 +138,14 @@ import BoxAction from '@/components/common/table/BoxAction.vue'
 import UpdateVariantModal from '@/views/product/action/UpdateVariantModal.vue'
 import CBreadcrumb from '@/components/common/breadcrumb/CBreadcrumb.vue'
 import ExportButton from '@/components/common/button/ExportButton.vue'
+import ImportButton from '@/components/common/button/ImportButton.vue'
 
 const productStore = useProductStore()
 const rootStore = useRootStore()
 const selectDataStore = useSelectDataStore()
 const router = useRouter()
 
-const { getProductList, deleteProductItem, exportProduct } = productStore
+const { getProductList, deleteProductItem, exportProduct, importProduct } = productStore
 const { confirm } = rootStore
 
 const productData = computed(() => productStore.productList)

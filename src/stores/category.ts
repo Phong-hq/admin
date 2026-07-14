@@ -46,6 +46,23 @@ export const useCategoryStore = defineStore('categoryStore', {
         }
       })
     },
+    importCategory(file: File): Promise<ImportResponse> {
+      return new Promise<ImportResponse>(async (resolve, reject) => {
+        try {
+          const formData = new FormData()
+          formData.append('file', file)
+          const res: ImportResponse = await axios.post(
+            '/api/v1/admin/product/category-import/import',
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+          )
+          this.reloadSelectList()
+          resolve(res)
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     deleteCategory(id: any): Promise<any> {
       return new Promise<any>(async (resolve, reject) => {
         try {

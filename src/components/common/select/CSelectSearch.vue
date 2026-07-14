@@ -83,6 +83,22 @@ const defaultSearchFunction = computed<
   return null
 })
 
+const defaultGetFunction = computed<((reload?: boolean) => Promise<any>) | null>(() => {
+  if (props.defaultData == 'inventory') return selectDataStore.getInventoryList
+  else if (props.defaultData == 'category') return selectDataStore.getCategoryList
+  else if (props.defaultData == 'brand') return selectDataStore.getBrandList
+  else if (props.defaultData == 'office') return selectDataStore.getOfficeList
+  else if (props.defaultData == 'supplier') return selectDataStore.getSupplierList
+  else if (props.defaultData == 'variant') return selectDataStore.getVariantList
+  else if (props.defaultData == 'client') return selectDataStore.getClientList
+  else if (props.defaultData == 'promotion') return selectDataStore.getPromotionList
+  else if (props.defaultData == 'province') return selectDataStore.getProvinceList
+  else if (props.defaultData == 'contact') return selectDataStore.getContactList
+  else if (props.defaultData == 'user') return selectDataStore.getUserList
+  else if (props.defaultData == 'group') return selectDataStore.getGroupList
+  return null
+})
+
 const data = computed(() => {
   let result: SelectConfig = searching.value
     ? searchData.value
@@ -112,7 +128,15 @@ const data = computed(() => {
   return result
 })
 
-onMounted(async () => {})
+onMounted(async () => {
+  if (props.defaultData && props.params == undefined && defaultGetFunction.value) {
+    try {
+      await defaultGetFunction.value()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+})
 
 const loading = ref(false)
 const searchData = ref<SelectConfig>([])
