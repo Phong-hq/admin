@@ -3,7 +3,10 @@
     class="flex justify-between item-center bg-white w-full sm:px-7 px-4 py-3"
     style="border-bottom: 1px solid var(--color-CDE)"
   >
-    <p class="text-xl m-0 font-semibold !leading-[40px]">Newzen POS</p>
+    <div class="flex items-center gap-2">
+      <img class="h-8" src="@/assets/images/hnp.png" alt="HNP" />
+      <p class="text-xl m-0 font-semibold !leading-[40px]">Newzen POS</p>
+    </div>
     <div class="flex justify-end items-center gap-4">
       <div
         class="block sm:hidden cursor-pointer text-xl" 

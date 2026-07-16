@@ -1,8 +1,7 @@
 <template>
   <div class="w-full min-h-screen flex-center bg-[#F3F5F8]">
     <div class="w-[430px] flex-center flex-col page-box-white py-10">
-      <img src="@/assets/images/login/login-image.svg" alt="" />
-      <!-- <img class="w-[140px]" src="@/assets/images/login/login-image-2.png" alt="" /> -->
+      <img class="w-[140px]" src="@/assets/images/hnp.png" alt="HNP" />
       <p class="uppercase py-4">phần mềm quản lý bán hàng</p>
       <a-form
         class=""

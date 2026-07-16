@@ -84,12 +84,15 @@ const CMS_DEFAULT_DATA_KEYS: readonly string[] = [
 
 // ref_table names that don't match their default-data key 1:1
 const REF_TABLE_DEFAULT_DATA_ALIASES: Record<string, CmsDefaultDataKey> = {
-  product_variant: 'product_inventory'
+  product_variant: 'variant'
 }
 
 const defaultDataKey = computed<CmsDefaultDataKey | ''>(() => {
   if (props.options?.is_cms != 0) return ''
   const refTable = props.options?.ref_table ?? ''
+  console.log(REF_TABLE_DEFAULT_DATA_ALIASES[refTable]);
+  console.log(refTable);
+  
   if (REF_TABLE_DEFAULT_DATA_ALIASES[refTable]) return REF_TABLE_DEFAULT_DATA_ALIASES[refTable]
   if (CMS_DEFAULT_DATA_KEYS.includes(refTable)) return refTable as CmsDefaultDataKey
   return ''
@@ -156,7 +159,6 @@ const emitValue = () => {
 const defaultOptions = ref<SelectConfigItem[]>([])
 
 onMounted(async () => {
-  console.log('RelationInputSelect onMounted', props.modelValue, props.options)
   const initial = props.modelValue
   if (initial && typeof initial != 'string') {
     const items = Array.isArray(initial) ? initial : [initial]
