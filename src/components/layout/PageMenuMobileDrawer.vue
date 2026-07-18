@@ -29,15 +29,18 @@
         </template>
       </a-dropdown>
     </template>
-    <div class="flex justify-center gap-4 items-center menu-list border-b border-CDE pb-4 mb-4">
+    <div class="flex justify-center gap-3 items-center menu-list border-b border-CDE pb-4 mb-4">
       <div
         v-for="item in data"
         :key="item.key"
-        class="flex-center w-[40px] h-[40px] p-1 menu-item"
+        class="flex-center w-11 h-11 menu-item"
         :class="{ active: isActiveCategory(item) }"
         @click="handleActiveMenuItem(item.key)"
       >
-        <img :src="item.icon" alt="" />
+        <span
+          class="menu-item-icon"
+          :style="{ '-webkit-mask-image': `url(${item.icon})`, maskImage: `url(${item.icon})` }"
+        ></span>
       </div>
     </div>
     <a-menu
@@ -126,50 +129,44 @@ defineExpose({ show, hide })
 </script>
 
 <style lang="scss" scoped>
-@media (min-width: 640px) {
-  .menu-list {
-    .menu-item {
-      cursor: pointer;
-      border-radius: 8px;
-      &:hover,
-      &.active {
-        transition: 0.2s;
-        background-color: var(--color-primary);
-        img {
-          filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(31deg) brightness(105%)
-            contrast(101%);
-        }
-      }
-    }
-    .menu-list-item {
-      transition: 0.1s;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(90%);
-      .ant-menu {
-        border-inline-end: none !important;
-      }
-    }
-    &:hover {
-      .menu-list-item {
-        transition: transform 0.2s;
-        opacity: 1;
-        pointer-events: all;
-        transform: translateX(100%);
-      }
-    }
-  }
-}
 .menu-list {
   .menu-item {
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 12px;
+    position: relative;
+    transition: background-color 0.2s;
+
+    .menu-item-icon {
+      display: block;
+      width: 22px;
+      height: 22px;
+      background-color: var(--color-C82);
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-position: center;
+      transition: background-color 0.2s;
+    }
+
     &.active {
-      transition: 0.2s;
       background-color: var(--color-primary);
-      img {
-        filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(31deg) brightness(105%)
-          contrast(101%);
+
+      .menu-item-icon {
+        background-color: #fff;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        width: 7px;
+        height: 7px;
+        background: var(--color-tag);
+        clip-path: polygon(100% 0, 0 0, 100% 100%);
+        border-radius: 0 4px 0 0;
       }
     }
   }

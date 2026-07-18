@@ -22,7 +22,13 @@ export default {
       C82: 'var(--color-C82)',
       blue: 'var(--color-blue)',
       blue_light: 'var(--color-blue-light)',
-      item_hover: 'var(--color-item-hover)'
+      item_hover: 'var(--color-item-hover)',
+      canvas: 'var(--color-canvas)',
+      sidebar: 'var(--color-sidebar)',
+      sidebar_soft: 'var(--color-sidebar-soft)',
+      sidebar_border: 'var(--color-sidebar-border)',
+      sidebar_text: 'var(--color-sidebar-text)',
+      tag: 'var(--color-tag)'
     },
     extend: {
       boxShadow: {

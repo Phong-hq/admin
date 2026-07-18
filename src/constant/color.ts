@@ -21,7 +21,13 @@ const enum Color {
   ItemHover = 'rgba(79, 70, 229, 0.08)',
   BorderGray = '#E2E8F0',
   colorFillQuaternary = '#F8FAFC',
-  Link = '#4F46E5'
+  Link = '#4F46E5',
+  Canvas = '#EEF1F8',
+  Sidebar = '#15132A',
+  SidebarSoft = '#211D3D',
+  SidebarBorder = 'rgba(255, 255, 255, 0.08)',
+  SidebarText = '#9B97BE',
+  Tag = '#F59E0B'
 }
 
 export default Color
@@ -47,5 +53,11 @@ export function defineRootColor() {
     root.style?.setProperty('--color-CDE', Color.BorderGray)
     root.style?.setProperty('--color-C82', Color.C82)
     root.style?.setProperty('--color-link', Color.Link)
+    root.style?.setProperty('--color-canvas', Color.Canvas)
+    root.style?.setProperty('--color-sidebar', Color.Sidebar)
+    root.style?.setProperty('--color-sidebar-soft', Color.SidebarSoft)
+    root.style?.setProperty('--color-sidebar-border', Color.SidebarBorder)
+    root.style?.setProperty('--color-sidebar-text', Color.SidebarText)
+    root.style?.setProperty('--color-tag', Color.Tag)
   }
 }

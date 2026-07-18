@@ -10,7 +10,7 @@ export const ANT_CONFIG_TOKEN = {
   colorBgLayout: C.colorFillQuaternary,
   colorTextBase: C.Text,
   colorText: C.Text,
-  borderRadius: 10,
+  borderRadius: 12,
   colorSplit: C.BorderGray,
   colorBorderSecondary: C.Split,
   controlHeight: 32,

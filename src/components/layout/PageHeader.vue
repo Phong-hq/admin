@@ -1,30 +1,18 @@
 <template>
-  <header
-    class="flex justify-between item-center bg-white w-full sm:px-7 px-4 py-3"
-    style="border-bottom: 1px solid var(--color-CDE)"
-  >
-    <div class="flex items-center gap-2">
-      <img class="h-8" src="@/assets/images/hnp.png" alt="HNP" />
-      <p class="text-xl m-0 font-semibold !leading-[40px]">Newzen POS</p>
-    </div>
-    <div class="flex justify-end items-center gap-4">
-      <div
-        class="block sm:hidden cursor-pointer text-xl" 
-        @click="pageMenuMobileDrawerRef?.show()"
-      >
+  <header class="app-header flex justify-between items-center sm:mx-4 mx-3 sm:mt-4 mt-3 sm:px-6 px-4 py-3">
+    <div class="flex items-center gap-3">
+      <div class="mobile-menu-btn cursor-pointer text-lg" @click="pageMenuMobileDrawerRef?.show()">
         <MenuOutlined />
       </div>
+    </div>
+    <div class="flex justify-end items-center gap-4">
       <a-dropdown>
-        <div class="flex justify-end items-center gap-x-3 cursor-pointer">
-          <!-- <a-avatar :src="user?.profile_picture" :size="40" v-if="true" /> -->
-          <a-avatar :size="40">
-            <template #icon><UserOutlined /></template>
-          </a-avatar>
+        <div class="flex justify-end items-center gap-x-3 cursor-pointer group">
+          <a-avatar :size="38" :src="logoImage" class="user-avatar" />
           <div class="hidden sm:block">
-            <p class="font-bold">{{ user?.username || '' }}</p>
-            <!-- <p class="text-A9">Admin</p> -->
+            <p class="font-bold !mb-0 leading-tight">{{ user?.username || '' }}</p>
           </div>
-  
+          <DownOutlined class="hidden sm:block text-xs text-C82 transition-transform group-hover:rotate-180" />
         </div>
         <template #overlay>
           <a-menu>
@@ -44,9 +32,10 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { UserOutlined, LogoutOutlined, MenuOutlined } from '@ant-design/icons-vue'
+import { LogoutOutlined, MenuOutlined, DownOutlined } from '@ant-design/icons-vue'
 // COMPONENT
 import PageMenuMobileDrawer from '@/components/layout/PageMenuMobileDrawer.vue'
+import logoImage from '@/assets/images/hnp.png'
 //PINIA
 import { useAuthStore } from '@/stores/auth'
 // UTILS
@@ -58,4 +47,28 @@ const pageMenuMobileDrawerRef = ref<InstanceType<typeof PageMenuMobileDrawer> | 
 const user = computed(() => authStore.userInfo)
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+.app-header {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 12px 24px -14px rgba(30, 27, 75, 0.14);
+}
+
+.user-avatar {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--color-primary-bg);
+}
+
+.mobile-menu-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+}
+</style>
