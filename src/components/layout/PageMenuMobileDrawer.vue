@@ -7,28 +7,6 @@
     class="drawer-menu-mobile"
     :width="350"
   >
-    <template #extra>
-      <a-dropdown>
-        <div class="flex justify-end items-center gap-x-3 cursor-pointer">
-          <a-avatar :size="30">
-            <template #icon><UserOutlined /></template>
-          </a-avatar>
-          <div>
-            <p class="font-bold">{{ user?.username || '' }}</p>
-          </div>
-        </div>
-        <template #overlay>
-          <a-menu>
-            <a-menu-item class="h-10">
-              <a-space>
-                <LogoutOutlined />
-                <p @click="logout">Đăng xuất</p>
-              </a-space>
-            </a-menu-item>
-          </a-menu>
-        </template>
-      </a-dropdown>
-    </template>
     <div class="flex justify-center gap-3 items-center menu-list border-b border-CDE pb-4 mb-4">
       <div
         v-for="item in data"
@@ -54,25 +32,17 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
-import { UserOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 
 // COMPONENT
 
-//PINIA
-import { useAuthStore } from '@/stores/auth'
-
 // UTILS
 import { listMenu } from '@/utils/menu'
-
-const authStore = useAuthStore()
 
 const route = useRoute()
 const router = useRouter()
 
-const { logout } = authStore
 const visible = ref<boolean>(false)
-const user = computed(() => authStore.userInfo)
 const data = computed(() => listMenu)
 
 const menu = computed(() => {
