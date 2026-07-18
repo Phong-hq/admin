@@ -26,6 +26,14 @@
     >
       <a-input v-model:value="formState.sll_price" />
     </a-form-item>
+    <a-form-item
+      class="sm:!col-span-1 !col-span-2"
+      label="Giá chưa giảm:"
+      name="compare_price"
+      @input="handleCurrencyInput('compare_price')"
+    >
+      <a-input v-model:value="formState.compare_price" />
+    </a-form-item>
 <!--    <a-form-item class="!col-span-2" label="Trạng thái" name="allow_sell">-->
 <!--      <a-checkbox :checked="formState.allow_sell == 1" @change="handleCheckChange"-->
 <!--        >Có thể bán</a-checkbox-->
@@ -47,6 +55,7 @@ import { useSelectDataStore } from '@/stores/select_data'
 type FORM = {
   unit_price: string
   sll_price: string
+  compare_price: string
   // allow_sell: number
 }
 
@@ -84,10 +93,11 @@ const formRef = ref<any>(null)
 const tagsOptionData = ref<string[]>([])
 const formStateRender = reactive({
   unit_price: '',
-  sll_price: ''
+  sll_price: '',
+  compare_price: ''
 })
 
-const handleCurrencyInput = (key: 'unit_price' | 'sll_price') => {
+const handleCurrencyInput = (key: 'unit_price' | 'sll_price' | 'compare_price') => {
   formState.value[key] = currencyInput(formState.value[key])
   // formStateRender[key] = currency(formStateRender[key])
 }
@@ -103,6 +113,7 @@ const validate = async () => {
 const fillFormData = () => {
   formStateRender.sll_price = currencyInput(formState.value.sll_price)
   formStateRender.unit_price = currencyInput(formState.value.unit_price)
+  formStateRender.compare_price = currencyInput(formState.value.compare_price)
 }
 
 defineExpose({ validate, fillFormData })

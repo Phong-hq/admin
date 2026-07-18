@@ -69,6 +69,7 @@ const columns = [
   {
     title: 'Tiêu đề',
     key: 'title',
+    hidden: true,
     inputProps: { inputType: 'text' },
     isFilter: true
   },

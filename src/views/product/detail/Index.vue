@@ -141,7 +141,7 @@ const isMobileComputed = computed(() => {
 const isEdit = computed(() => route.name == 'product-detail')
 const productId = computed(() => String(route.params?.id))
 
-const CURRENCY_KEY = ['unit_price', 'sll_price']
+const CURRENCY_KEY = ['unit_price', 'sll_price', 'compare_price']
 
 // const formState = reactive<PRODUCT_REQUEST>({
 //   id: null,
@@ -194,6 +194,7 @@ const subDataState = reactive({
 const priceState = reactive({
   sll_price: '0',
   unit_price: '0',
+  compare_price: '',
   // allow_sell: 0
 })
 
@@ -252,6 +253,7 @@ const onFinish = async (values: any) => {
     CURRENCY_KEY.forEach((key) => {
       data[key] = currencyNumber(data[key])
     })
+    data.compare_price = priceState.compare_price ? data.compare_price : null
     if (isEdit.value) {
       await updateProductItem(productId.value, data)
     } else {
@@ -292,6 +294,7 @@ const fillFormData = async (res: PRODUCT_RESPONSE) => {
 
   priceState.sll_price = currencyInput(res.sll_price) || '0'
   priceState.unit_price = currencyInput(res.unit_price) || '0'
+  priceState.compare_price = res.compare_price ? currencyInput(res.compare_price) : ''
   // priceState.allow_sell = res.allow_sell || 0
 
   warehouseState.weight = Number(res.weight) || 0

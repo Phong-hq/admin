@@ -16,6 +16,7 @@ export type PRODUCT_RESPONSE = PRODUCT_VARIANTS_RESPONSE & {
   tags: any
   additional_data: { name: string; value: string }[]
   bar_code: string
+  compare_price: null | number
 }
 
 export type PRODUCT_VARIANTS_RESPONSE = Nullable<{
