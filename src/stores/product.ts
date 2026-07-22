@@ -86,7 +86,7 @@ export const useProductStore = defineStore('productStore', {
           const formData = new FormData()
           formData.append('file', file)
           // TODO: chưa có API, tạm để sẵn endpoint
-          const res: any = await axios.post('/api/v1/admin/product/item/import', formData, {
+          const res: any = await axios.post('/api/v1/admin/product/product-import/import', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
           })
           this.reloadSelectList()

@@ -206,9 +206,9 @@ const warehouseState = reactive({
 
 onMounted(async () => {
   try {
-    selectDataStore.getCategoryList()
-    selectDataStore.getBrandList()
-    selectDataStore.getSupplierList()
+    // selectDataStore.getCategoryList()
+    // selectDataStore.getBrandList()
+    // selectDataStore.getSupplierList()
     if (isEdit.value && productId.value) {
       rootStore.showLoading()
       // await selectDataStore.getCategoryList()

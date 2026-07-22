@@ -63,8 +63,11 @@ onBeforeUnmount(() => {
 const isActiveCategory = (data: any) => {
   if (!data?.menu || !data?.menu?.length) return false
 
-  let children = data?.menu?.map((item: any) => item.children || []).flat()
-  return children.find((item: any) => item.key === selectedKeys.value[0])
+  const groupKeys = data.menu.map((item: any) => item.key)
+  const children = data.menu.map((item: any) => item.children || []).flat()
+  return selectedKeys.value.some(
+    (key) => groupKeys.includes(key) || children.find((item: any) => item.key === key)
+  )
 }
 
 const handleClick = (data: any) => {
@@ -94,7 +97,7 @@ const handleDocumentClick = (e: MouseEvent) => {
 const getActiveKey = () => {
   selectedKeys.value = []
   if (route?.matched.length > 1) {
-    for (let i = 1; i < route?.matched.length; i++) {
+    for (let i = 0; i < route?.matched.length; i++) {
       selectedKeys.value.push(String(route?.matched[i].name))
     }
   } else {

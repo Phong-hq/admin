@@ -348,15 +348,15 @@ const getVariantsData = () => {
         meta_field,
         selection: null,
         inventories: [
-          {
-            id: 1,
-            name: "Moon Coffee",
-            office_id: 1,
-            quantity: 10000,
-            inventory_id: 1,
-            unit_price: currencyNumber(props.sllPrice),
-            sll_price: currencyNumber(props.sllPrice)
-          }
+          // {
+          //   id: 1,
+          //   name: "Moon Coffee",
+          //   office_id: 1,
+          //   quantity: 10000,
+          //   inventory_id: 1,
+          //   unit_price: currencyNumber(props.sllPrice),
+          //   sll_price: currencyNumber(props.sllPrice)
+          // }
         ]
       }
     })
@@ -373,15 +373,15 @@ const getVariantsData = () => {
         skuIndex: skuIndex.value,
         meta_field: [],
         inventories: [
-          {
-            id: 1,
-            name: "Moon Coffee",
-            office_id: 1,
-            quantity: 10000,
-            inventory_id: 1,
-            unit_price: currencyNumber(props.sllPrice),
-            sll_price: currencyNumber(props.sllPrice)
-          }
+          // {
+          //   id: 1,
+          //   name: "Moon Coffee",
+          //   office_id: 1,
+          //   quantity: 10000,
+          //   inventory_id: 1,
+          //   unit_price: currencyNumber(props.sllPrice),
+          //   sll_price: currencyNumber(props.sllPrice)
+          // }
         ]
       }
     ]

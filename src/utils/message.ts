@@ -21,7 +21,10 @@ export const handle_error = (error: any, messageError: string = 'Error') => {
     description == ''
   ) {
     resError = error?.response?.data?.data?.errors
-    while (Object.values(resError).length && typeof resError != 'string') {
+    console.log(resError)
+    while (resError &&
+  typeof resError !== 'string' &&
+  Object.values(resError).length) {
       if (Object.values(resError)[0]) {
         //HAS MESSAGE FIELD
         if (resError.message) {

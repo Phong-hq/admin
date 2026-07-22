@@ -1,18 +1,28 @@
 <template>
   <div class="min-h-full relative">
-    <c-breadcrumb :page="isEdit && order?.code ? ('Chỉnh sửa đơn hàng ' + order?.code) : ''" />
-    <div class="w-full page-box-white" v-if="isEdit && !(order?.channel == 'pos')">
+    <c-breadcrumb :page="isEdit && order?.code ? ('Đơn hàng ' + order?.code) : ''" />
+
+    <div class="page-box-white" v-if="isEdit && !(order?.channel == 'pos')">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div class="flex items-center gap-2.5">
+          <span class="text-lg font-bold">{{ order?.code }}</span>
+          <a-tag class="!m-0" v-if="order?.channel">{{ order?.channel }}</a-tag>
+        </div>
+        <p class="!mb-0 text-sm text-C82" v-if="order?.created_at">
+          Tạo lúc {{ createdAtLabel }}
+        </p>
+      </div>
       <order-progress :order="order" @getData="handleGetData" :is-disabled="disabled" />
     </div>
-    <div class="grid xl:grid-cols-[1fr_280px] grid-cols-1 gap-4 mt-4">
-      <div class="w-full">
+
+    <div class="flex flex-col xl:flex-row gap-4 mt-4">
+      <div class="grow min-w-0 flex flex-col gap-y-4">
         <div class="page-box-white" v-if="!isEdit">
           <p class="heading-1">Thông tin đơn hàng</p>
-          <info class="" ref="infoRef" :order="order" :is-edit="isEdit" :disabled="disabled"/>
+          <info ref="infoRef" :order="order" :is-edit="isEdit" :disabled="disabled" />
         </div>
         <product-list
           ref="productListRef"
-          class=""
           :data="order?.order_items || []"
           :order="order"
           :disabled="disabled"
@@ -21,15 +31,12 @@
           v-else
         />
       </div>
-      <div class="flex flex-col gap-y-4">
+      <div class="shrink-0 w-full xl:w-[360px] flex flex-col gap-y-4">
         <div class="page-box-white" v-if="isEdit">
-          <div class="flex justify-between items-center gap-2">
-            <p class="heading-1">Thông tin đơn hàng</p>
-          </div>
+          <p class="heading-1">Thông tin đơn hàng</p>
           <info ref="infoRef" :order="order" :is-edit="isEdit" :disabled="disabled" @get-data="handleGetData" />
         </div>
         <classify
-          class=""
           ref="classyRef"
           v-model="classyState"
           :disabled="disabled"
@@ -39,8 +46,9 @@
         />
       </div>
     </div>
-    <div class="sticky bottom-0 w-full flex-center gap-4 z-[2] mt-7">
-      <a-button class="w-[150px]" type="primary" @click="submit" v-if="!isEdit">Tạo</a-button>
+
+    <div class="action-bar" v-if="!isEdit">
+      <a-button class="min-w-[180px]" size="large" type="primary" @click="submit">Tạo đơn hàng</a-button>
     </div>
   </div>
 </template>
@@ -48,8 +56,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import dayjs from 'dayjs'
 import type { ORDER_RESPONSE } from '@/types/order/website'
 import { ORDER_STATUS, ORDER_STATUS_DATA } from '@/constant/order'
+import { DATE_RENDER, TIME_RENDER } from '@/utils/dayjs-helper'
 
 // COMPONENT
 import Classify from '@/views/order/detail/Classify.vue'
@@ -87,6 +97,11 @@ const disabled = computed(
       ORDER_STATUS.Out_Of_Stock == order.value?.status ||
       order.value?.channel == 'pos')
 )
+
+const createdAtLabel = computed(() => {
+  if (!order.value?.created_at) return ''
+  return `${dayjs(order.value.created_at).format(DATE_RENDER)} ${dayjs(order.value.created_at).format(TIME_RENDER)}`
+})
 
 onMounted(() => {
   selectDataStore.getOfficeList()
@@ -164,4 +179,18 @@ const submit = async () => {
 
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+.action-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin-top: 28px;
+  padding: 14px 0;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-top: 1px solid var(--color-CDE);
+}
+</style>
