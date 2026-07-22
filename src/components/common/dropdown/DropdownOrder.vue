@@ -24,16 +24,11 @@
         </a-menu-item>
         <a-menu-item
           v-else-if="(currentStatus ?? data?.status) == ORDER_STATUS.Approved"
-          @click="changeStatus(ORDER_STATUS.Pack)"
-          >Đóng gói
+          @click="changeStatus(ORDER_STATUS.Waiting_Shipper)"
+          >Chờ giao
         </a-menu-item>
         <a-menu-item
-          v-else-if="(currentStatus ?? data?.status) == ORDER_STATUS.Pack"
-          @click="changeStatus(ORDER_STATUS.Out_Of_Stock)"
-          >Rời kho
-        </a-menu-item>
-        <a-menu-item
-          v-else-if="(currentStatus ?? data?.status) == ORDER_STATUS.Out_Of_Stock"
+          v-else-if="(currentStatus ?? data?.status) == ORDER_STATUS.Waiting_Shipper"
           @click="changeStatus(ORDER_STATUS.Done)"
           >Hoàn thành
         </a-menu-item>

@@ -93,8 +93,7 @@ const disabled = computed(
     (ORDER_STATUS.Cancel == order.value?.status ||
       ORDER_STATUS.Done == order.value?.status ||
       ORDER_STATUS.Approved == order.value?.status ||
-      ORDER_STATUS.Pack == order.value?.status ||
-      ORDER_STATUS.Out_Of_Stock == order.value?.status ||
+      ORDER_STATUS.Waiting_Shipper == order.value?.status ||
       order.value?.channel == 'pos')
 )
 

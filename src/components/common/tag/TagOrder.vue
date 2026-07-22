@@ -19,11 +19,10 @@ const props = withDefaults(defineProps<Props>(), {})
 
 const color = computed(() => {
   if (Number(props.type) == ORDER_STATUS.Done) return C.Success
-  else if (Number(props.type) == ORDER_STATUS.Pack) return C.Teal
+  else if (Number(props.type) == ORDER_STATUS.Waiting_Shipper) return C.Teal
   else if (Number(props.type) == ORDER_STATUS.Cancel) return C.Error
   else if (Number(props.type) == ORDER_STATUS.Approved) return C.Blue
   else if (Number(props.type) == ORDER_STATUS.Approved_Pending) return C.Warning
-  else if (Number(props.type) == ORDER_STATUS.Out_Of_Stock) return C.Purple
   return ''
 })
 onMounted(() => {})

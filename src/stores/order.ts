@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from '@/plugins/axios'
 import type { ORDER_RESPONSE } from '@/types/order/website'
-import { getStatusLabel, ORDER_STATUS } from '@/constant/order'
+import { getStatusLabel } from '@/constant/order'
 import { useRootStore } from '@/stores/root'
 
 export const useOrderStore = defineStore('orderStore', {
@@ -52,25 +52,19 @@ export const useOrderStore = defineStore('orderStore', {
       })
     },
 
-    updateOrderStatus(order: any, type: any): Promise<ORDER_RESPONSE> {
-      return new Promise<ORDER_RESPONSE>(async (resolve, reject) => {
-        let url = ''
-        if (type == ORDER_STATUS.Pack) url = 'packing'
-        else if (type == ORDER_STATUS.Cancel) url = 'cancel'
-        else if (type == ORDER_STATUS.Done) url = 'done'
-        else if (type == ORDER_STATUS.Out_Of_Stock) url = 'stockout'
-        else if (type == ORDER_STATUS.Approved) url = 'approved'
-
+    updateOrderStatus(order: any, status: number): Promise<any> {
+      return new Promise<any>(async (resolve, reject) => {
         const rootStore = useRootStore()
         try {
           await rootStore.confirm({
             headerTitle: 'đổi trạng thái',
-            bodyTitle: `Bạn có chắc chắn muốn thay đổi trạng thái của đơn hàng ${order?.code} thành '${getStatusLabel(type)}' không?`
+            bodyTitle: `Bạn có chắc chắn muốn thay đổi trạng thái của đơn hàng ${order?.code} thành '${getStatusLabel(status)}' không?`
           })
-          const res: { order: ORDER_RESPONSE } = await axios.post(
-            `/api/v1/admin/order/website/${url}?id=${order?.id}`
+          const res: any = await axios.post(
+            `/api/v1/admin/order/website/change-status?id=${order?.id}&expand=order_items`,
+            { status }
           )
-          resolve(res.order)
+          resolve(res?.order ?? res)
         } catch (error) {
           reject(error)
         }

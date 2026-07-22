@@ -34,8 +34,7 @@ const emits = defineEmits<{
 const STATUS_DATA = [
   ORDER_STATUS.Approved_Pending,
   ORDER_STATUS.Approved,
-  ORDER_STATUS.Pack,
-  ORDER_STATUS.Out_Of_Stock,
+  ORDER_STATUS.Waiting_Shipper,
   ORDER_STATUS.Done
 ]
 
@@ -78,7 +77,7 @@ const handleChange = async (index: any) => {
 
 const current = computed<number>(() => {
   if (props.order?.status == ORDER_STATUS.Cancel) {
-    if(props.order?.progress_status?.length == 5) return 4
+    if(props.order?.progress_status?.length == STATUS_DATA.length) return STATUS_DATA.length - 1
     return props.order?.progress_status?.length ?? 0
   }
   return STATUS_DATA.findIndex((e) => e == props.order?.status)
