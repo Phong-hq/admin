@@ -1,12 +1,7 @@
 import axios, { type AxiosInstance } from 'axios'
 import { useAuthStore } from '@/stores/auth'
-const temp = import.meta.env.VITE_API;
 const instance = axios.create({
-  // baseURL: 'https://erp-core-demo.srv01.dtsmart.dev'
-  // baseURL: 'https://ecommerce-api.srv01.dtsmart.dev'
-  // baseURL: 'http://192.168.1.174:8080'
-  baseURL: 'http://localhost:9001'
-  // baseURL: temp
+  baseURL: import.meta.env.VITE_API || 'https://api-erp-hoang-nam-phat.thanhtoan24on7.xyz/api/
 })
 
 type AxiosInstanceConfig = {
