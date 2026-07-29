@@ -12,10 +12,7 @@
       :class="{ active: isActiveCategory(item) }"
       @click="handleItemClick(item)"
     >
-      <span
-        class="menu-item-icon"
-        :style="{ '-webkit-mask-image': `url(${item.icon})`, maskImage: `url(${item.icon})` }"
-      ></span>
+      <img :src="item.icon" width="22" height="22" alt="" class="menu-item-icon" />
     </div>
     <div class="w-[256px] h-full absolute top-0 right-0 bg-white p-4 menu-list-item">
       <a-menu
@@ -133,20 +130,14 @@ const activeKeyHover = ref(data.value[0].key)
       display: block;
       width: 22px;
       height: 22px;
-      background-color: var(--color-sidebar-text);
-      -webkit-mask-size: contain;
-      mask-size: contain;
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
-      -webkit-mask-position: center;
-      mask-position: center;
-      transition: background-color 0.2s;
+      object-fit: contain;
+      transition: filter 0.2s;
     }
 
     &:hover {
       background-color: var(--color-sidebar-soft);
       .menu-item-icon {
-        background-color: #fff;
+        filter: brightness(0) invert(1);
       }
     }
 
@@ -154,7 +145,7 @@ const activeKeyHover = ref(data.value[0].key)
       background-color: var(--color-primary);
 
       .menu-item-icon {
-        background-color: #fff;
+        filter: brightness(0) invert(1);
       }
 
       // signature: a die-cut price-tag corner on the active nav item

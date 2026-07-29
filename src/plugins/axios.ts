@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance } from 'axios'
 import { useAuthStore } from '@/stores/auth'
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API || 'https://api-erp-hoang-nam-phat.thanhtoan24on7.xyz/api/'
+  baseURL: import.meta.env.VITE_API || 'https://api-erp-hoang-nam.thanhtoan24on7.xyz/api/'
 })
 
 type AxiosInstanceConfig = {

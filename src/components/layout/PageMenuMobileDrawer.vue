@@ -15,10 +15,7 @@
         :class="{ active: isActiveCategory(item) }"
         @click="handleActiveMenuItem(item.key)"
       >
-        <span
-          class="menu-item-icon"
-          :style="{ '-webkit-mask-image': `url(${item.icon})`, maskImage: `url(${item.icon})` }"
-        ></span>
+        <img :src="item.icon" width="22" height="22" alt="" class="menu-item-icon" />
       </div>
     </div>
     <a-menu
@@ -117,21 +114,15 @@ defineExpose({ show, hide })
       display: block;
       width: 22px;
       height: 22px;
-      background-color: var(--color-C82);
-      -webkit-mask-size: contain;
-      mask-size: contain;
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
-      -webkit-mask-position: center;
-      mask-position: center;
-      transition: background-color 0.2s;
+      object-fit: contain;
+      transition: filter 0.2s;
     }
 
     &.active {
       background-color: var(--color-primary);
 
       .menu-item-icon {
-        background-color: #fff;
+        filter: brightness(0) invert(1);
       }
 
       &::after {
