@@ -15,7 +15,7 @@
         :class="{ active: isActiveCategory(item) }"
         @click="handleActiveMenuItem(item.key)"
       >
-        <img :src="item.icon" width="22" height="22" alt="" class="menu-item-icon" />
+        <img :src="item.icon" width="28" height="28" alt="" class="menu-item-icon" />
       </div>
     </div>
     <a-menu
@@ -112,8 +112,8 @@ defineExpose({ show, hide })
 
     .menu-item-icon {
       display: block;
-      width: 22px;
-      height: 22px;
+      width: 28px;
+      height: 28px;
       object-fit: contain;
       transition: filter 0.2s;
     }

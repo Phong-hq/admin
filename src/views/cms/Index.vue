@@ -59,12 +59,18 @@
             :row-click="showEditRecord"
             @get-data="initData"
           >
-            <template #bodyCell="{ text, record, column }">
+            <template #bodyCell="{ text, record, column, }">
               <template v-if="column.key == 'created_at'">
                 <box-created-time :time="text" />
               </template>
               <template v-else-if="column.schemaType == SCHEMAS.FILE">
-                <a-image class="max-w-[50px] max-h-[50px]" :src="text" v-if="text"></a-image>
+                <div class="flex gap-2" v-if="column.schemaOption.type == 'multiple'">
+                  <div v-for="item in record[column.key]" :key="item">
+                    <a-image class="max-w-[50px] max-h-[50px]" :src="item" v-if="item"></a-image>
+                  </div>
+
+                </div>
+                <a-image class="max-w-[50px] max-h-[50px]" :src="text" v-else-if="text"></a-image>
               </template>
               <template v-else-if="column.schemaType == SCHEMAS.RELATION">
                 <template v-if="record[column.key]?.length > 0">

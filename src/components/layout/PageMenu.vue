@@ -12,7 +12,7 @@
       :class="{ active: isActiveCategory(item) }"
       @click="handleItemClick(item)"
     >
-      <img :src="item.icon" width="22" height="22" alt="" class="menu-item-icon" />
+      <img :src="item.icon" width="28" height="28" alt="" class="menu-item-icon" />
     </div>
     <div class="w-[256px] h-full absolute top-0 right-0 bg-white p-4 menu-list-item">
       <a-menu
@@ -128,8 +128,8 @@ const activeKeyHover = ref(data.value[0].key)
 
     .menu-item-icon {
       display: block;
-      width: 22px;
-      height: 22px;
+      width: 28px;
+      height: 28px;
       object-fit: contain;
       transition: filter 0.2s;
     }
