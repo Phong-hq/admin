@@ -4,7 +4,7 @@
     v-model:open="open"
     :title="isEdit ? 'Thông tin record' : 'Tạo record'"
     placement="right"
-    :width="500"
+    :width="1000"
   >
     <template #footer>
       <div class="flex justify-end gap-4">
