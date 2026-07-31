@@ -95,7 +95,7 @@
                 {{ text == 1 ? 'true' : 'false' }}
               </template>
               <template v-else-if="column.schemaType == SCHEMAS.EDITOR">
-                <div class="max-h-[150px] overflow-auto" v-html="text"></div>
+                <div class="max-h-[150px] overflow-auto" v-html="renderCkEditorContent(text)"></div>
               </template>
               <template v-else-if="column.schemaType == SCHEMAS.DATE_TIME">
                 <box-created-time :time="text" />
@@ -153,6 +153,7 @@ import { SettingOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons
 import { useCmsStore } from '@/stores/cms'
 import { useRootStore } from '@/stores/root'
 import { handle_error, handle_success } from '@/utils/message'
+import { renderCkEditorContent } from '@/utils/ckeditor-helper'
 
 //COMPONENT
 import Collection from './Collection.vue'

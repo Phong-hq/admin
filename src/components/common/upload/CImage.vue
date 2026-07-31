@@ -13,6 +13,19 @@
     :showUploadList="true"
     :multiple="type == 'multiple'"
   >
+    <template v-if="type == 'multiple'" #itemRender="{ originNode, file }">
+      <div
+        class="c-image-drag-item"
+        :class="{ 'is-drag-over': dragOverUid === file.uid }"
+        draggable="true"
+        @dragstart="handleDragStart(file)"
+        @dragover.prevent="handleDragOver(file)"
+        @drop.prevent="handleDrop(file)"
+        @dragend="handleDragEnd"
+      >
+        <component :is="() => originNode" />
+      </div>
+    </template>
     <div v-if="!(type == 'default' && fileListRender && fileListRender?.length >= 1)">
       <div class="" v-if="listType == 'picture-card'">
         <div class="relative flex-center flex-col">
@@ -112,6 +125,40 @@ onMounted(() => {
 const fileList = ref<UploadProps['fileList']>([])
 const loading = ref(false)
 
+const dragUid = ref<string | null>(null)
+const dragOverUid = ref<string | null>(null)
+
+const handleDragStart = (file: UploadFile) => {
+  dragUid.value = file.uid
+}
+
+const handleDragOver = (file: UploadFile) => {
+  if (file.uid === dragUid.value) return
+  dragOverUid.value = file.uid
+}
+
+const handleDragEnd = () => {
+  dragUid.value = null
+  dragOverUid.value = null
+}
+
+const handleDrop = (targetFile: UploadFile) => {
+  if (typeof result.value == 'string' || !result.value || !dragUid.value) {
+    handleDragEnd()
+    return
+  }
+  const items = fileListRender.value ?? []
+  const fromIndex = items.findIndex((e) => e.uid === dragUid.value)
+  const toIndex = items.findIndex((e) => e.uid === targetFile.uid)
+  if (fromIndex > -1 && toIndex > -1 && fromIndex !== toIndex) {
+    const list = [...result.value]
+    const [moved] = list.splice(fromIndex, 1)
+    list.splice(toIndex, 0, moved)
+    result.value = list
+  }
+  handleDragEnd()
+}
+
 const indicator = h(LoadingOutlined, {
   style: {
     fontSize: '24px'
@@ -183,6 +230,20 @@ const handleRemove = async (file: UploadFile) => {
 .ant-upload {
   &.ant-upload-select {
     width: 100%;
+  }
+}
+
+.c-image-drag-item {
+  cursor: grab;
+  height: 100%;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &.is-drag-over .ant-upload-list-item {
+    outline: 2px dashed #1677ff;
+    outline-offset: -2px;
   }
 }
 </style>

@@ -35,7 +35,7 @@
 
         <product-additional-data v-model="additional_data" />
       </div>
-      <div class="page-box-white">
+      <!-- <div class="page-box-white">
         <p class="heading-1 mb-2">Thuộc tính</p>
         <p class="sub-heading">
           Thêm nhiều thuộc tính cho sản phẩm này, như kích thước hoặc màu sắc.
@@ -51,7 +51,7 @@
           :bar-code="infoState.bar_code"
           :images="subDataState.images"
         />
-      </div>
+      </div> -->
     </div>
     <div class="shrink-0 w-[30%] xl:flex-col hidden gap-4">
       <div class="page-box-white">

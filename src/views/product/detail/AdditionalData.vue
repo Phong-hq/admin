@@ -10,7 +10,7 @@
         </div>
         <div
           class="w-full max-h-[200px] overflow-auto"
-          v-html="item.value"
+          v-html="renderCkEditorContent(item.value)"
           v-if="typeof item.value == 'string'"
         ></div>
         <a-dropdown>
@@ -74,6 +74,7 @@
 <script lang="ts" setup>
 import { ref, reactive, computed } from 'vue'
 import { EditOutlined, DeleteOutlined, SmallDashOutlined } from '@ant-design/icons-vue'
+import { renderCkEditorContent } from '@/utils/ckeditor-helper'
 
 //COMPONENTS
 import CEditor from '@/components/common/editor/CEditor.vue'

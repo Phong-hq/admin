@@ -4,7 +4,7 @@
     v-model:open="open"
     :title="isEdit ? 'Thông tin record' : 'Tạo record'"
     placement="right"
-    :width="1000"
+    :width="1400"
   >
     <template #footer>
       <div class="flex justify-end gap-4">
@@ -55,7 +55,11 @@
             :name="item.name"
             v-else-if="item.type == SCHEMAS.DATE_TIME"
           >
-            <a-date-picker class="" v-model:value="formState[item.name]" placeholder="Chọn ngày" />
+            <a-date-picker
+              class="date-picker-primary"
+              v-model:value="formState[item.name]"
+              placeholder="Chọn ngày"
+            />
           </a-form-item>
 
           <a-form-item
@@ -78,7 +82,7 @@
             v-else-if="item.type == SCHEMAS.SELECT"
           >
             <c-select
-              class=""
+              class="select-primary"
               v-model:value="formState[item.name]"
               :data="item.options?.value"
               :mode="item.options?.type == 'multiple' ? 'multiple' : undefined"
@@ -269,6 +273,13 @@ const reset = (data?: any) => {
 
 defineExpose({ show })
 </script>
+
+<style scoped>
+:deep(.date-picker-primary),
+:deep(.select-primary .ant-select-selector) {
+  border-color: var(--color-primary) !important;
+}
+</style>
 
 <style>
 .list-enter-active,
