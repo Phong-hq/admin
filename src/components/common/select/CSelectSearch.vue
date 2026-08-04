@@ -100,11 +100,12 @@ const defaultGetFunction = computed<((reload?: boolean) => Promise<any>) | null>
 })
 
 const data = computed(() => {
-  let result: SelectConfig = searching.value
+  const base: SelectConfig = searching.value
     ? searchData.value
     : props.params == undefined
       ? currentDefaultData.value
       : defautDataWithParams.value
+  let result: SelectConfig = [...base]
   if (props.extraData?.length) {
     props.extraData.forEach(item => {
       if (

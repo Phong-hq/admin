@@ -90,9 +90,6 @@ const REF_TABLE_DEFAULT_DATA_ALIASES: Record<string, CmsDefaultDataKey> = {
 const defaultDataKey = computed<CmsDefaultDataKey | ''>(() => {
   if (props.options?.is_cms != 0) return ''
   const refTable = props.options?.ref_table ?? ''
-  console.log(REF_TABLE_DEFAULT_DATA_ALIASES[refTable]);
-  console.log(refTable);
-  
   if (REF_TABLE_DEFAULT_DATA_ALIASES[refTable]) return REF_TABLE_DEFAULT_DATA_ALIASES[refTable]
   if (CMS_DEFAULT_DATA_KEYS.includes(refTable)) return refTable as CmsDefaultDataKey
   return ''
