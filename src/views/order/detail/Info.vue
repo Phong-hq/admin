@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="flex items-center gap-4 mb-4" v-if="order?.code">
+    <div class="flex items-center gap-4 mb-4" v-if="order?.code && (!isEdit || order?.channel == 'pos')">
       <p class="heading-2 !mb-0">Mã đơn hàng</p>
       {{ order?.code }}
     </div>
 
-    <div class="flex items-center gap-4 mb-4" v-if="order?.channel">
+    <div class="flex items-center gap-4 mb-4" v-if="order?.channel && (!isEdit || order?.channel == 'pos')">
       <p class="heading-2 !mb-0">Kênh bán</p>
       <a-tag class="">{{ order?.channel }}</a-tag>
     </div>
@@ -30,7 +30,7 @@
         <div class="w-full flex gap-2">
           <c-select-search
             :disabled="disabled"
-            class="grow !mb-4"
+            class="grow"
             @change="handleChooseClient"
             v-model:value="formState.client_id"
             :extra-data="[{ value: order?.client?.id, label: order?.client?.name }]"
@@ -50,7 +50,7 @@
     <div class="p-2" v-if="loading">
       <a-spin></a-spin>
     </div>
-    <div class="grid grid-cols-2">
+    <div class="flex flex-col gap-4">
       <div
         class="flex flex-col gap-4"
         v-if="
@@ -85,8 +85,17 @@
           >Chỉnh sửa
         </a-button>
       </div>
-      <!--  </div>-->
-      <!--  <div class="grid grid-cols-2">-->
+      <a-divider
+        class="!my-0"
+        v-if="
+          (formState?.shipping_address.name ||
+            formState?.shipping_address.phone ||
+            formState?.shipping_address.address) &&
+          (formState?.order_address.name ||
+            formState?.order_address.phone ||
+            formState?.order_address.address)
+        "
+      />
       <div
         class="flex flex-col gap-4"
         v-if="

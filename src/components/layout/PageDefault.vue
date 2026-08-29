@@ -2,7 +2,6 @@
   <div class="w-full flex-col main overflow-hidden">
     <page-header class="shrink-0" />
     <div class="w-full grid sm:grid-cols-[auto] grid-cols-1 sm:grow overflow-hidden gap-4 sm:p-4 p-3">
-      <!-- <page-menu class="z-[10] h-full" /> -->
       <div
         class="absolute inset-0 sc-full flex justify-center p-7 pt-[100px] bg-[#cfcfcf5e] backdrop-blur-sm z-[10000]"
         v-if="loading"
@@ -25,7 +24,6 @@ import { useRoute } from 'vue-router'
 
 // COMPONENT
 import PageHeader from '@/components/layout/PageHeader.vue'
-import PageMenu from './PageMenu.vue'
 
 //PINIA
 import { useRootStore } from '@/stores/root'

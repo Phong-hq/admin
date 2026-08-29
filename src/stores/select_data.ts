@@ -111,6 +111,39 @@ export const useSelectDataStore = defineStore('selectDataStore', {
         }
       })
     },
+    async searchBrandByCategoryList(key: string, params?: any): Promise<SelectConfigItem[]> {
+      return new Promise<SelectConfigItem[]>(async (resolve, reject) => {
+        try {
+          const categoryId = params?.category_id
+          if (!categoryId) {
+            resolve([])
+            return
+          }
+          const res: DataWithMetaResponse<any[]> = await axios.get(
+            '/api/v1/admin/product/category-brand',
+            {
+              params: {
+                category_id: categoryId,
+                brand_name: key || undefined,
+                'per-page': 100
+              }
+            }
+          )
+          const selectResponse = res.items
+            .filter((e) => e?.brand)
+            .map((e) => {
+              return {
+                value: e.brand.id,
+                label: e.brand.name,
+                image: e.brand.icon
+              } as SelectConfigItem
+            })
+          resolve(selectResponse)
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     async getSupplierList(reload?: boolean) {
       return new Promise<any>(async (resolve, reject) => {
         this.hasChange.supplier = false

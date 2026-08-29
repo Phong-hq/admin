@@ -68,8 +68,9 @@
         ><p class="text-blue cursor-pointer font-semibold">Phí vận chuyển:</p></edit-delivery-modal
       >
       <p class="text-right">{{ currency(order?.delivery_fee || 0) }}</p>
-      <p class="font-semibold">Tổng thanh toán:</p>
-      <p class="text-right">{{ currency(order?.payments || 0) }}</p>
+      <div class="col-span-2 border-t border-CDE mt-2 pt-2"></div>
+      <p class="heading-2 !mb-0 text-base">Tổng thanh toán:</p>
+      <p class="text-right heading-2 !mb-0 text-lg text-primary">{{ currency(order?.payments || 0) }}</p>
     </div>
     <add-product-modal
       ref="addProductRef"

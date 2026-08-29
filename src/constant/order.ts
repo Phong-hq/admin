@@ -1,4 +1,5 @@
 import type { SelectConfigItem } from '@/types'
+import C from '@/constant/color'
 export enum ORDER_STATUS {
   All = -2,
   Cancel = -1,
@@ -29,4 +30,34 @@ export const ORDER_STATUS_NEXT: Partial<Record<ORDER_STATUS, ORDER_STATUS[]>> = 
 export const getStatusLabel = (id: any) => {
   const value = Number(id)
   return ORDER_STATUS_DATA.find((e) => e.value === value)?.label || ''
+}
+
+export enum ORDER_DELIVERY_METHOD {
+  Delivery = 'delivery',
+  Pickup = 'pickup'
+}
+
+export const ORDER_DELIVERY_METHOD_DATA = [
+  { value: ORDER_DELIVERY_METHOD.Pickup, label: 'COD', color: C.Purple },
+  { value: ORDER_DELIVERY_METHOD.Delivery, label: 'Giao hàng trực tiếp', color: C.Blue }
+]
+
+export const getDeliveryMethodData = (value: any) => {
+  return ORDER_DELIVERY_METHOD_DATA.find((e) => e.value === value)
+}
+
+export enum ORDER_PAYMENT_METHOD {
+  Cash = 'cash',
+  BankTransfer = 'bank_transfer',
+  Cod = 'cod'
+}
+
+export const ORDER_PAYMENT_METHOD_DATA = [
+  { value: ORDER_PAYMENT_METHOD.Cash, label: 'Tiền mặt', color: C.Success },
+  { value: ORDER_PAYMENT_METHOD.BankTransfer, label: 'Chuyển khoản', color: C.Blue },
+  { value: ORDER_PAYMENT_METHOD.Cod, label: 'Thanh toán khi nhận hàng (COD)', color: C.Warning }
+]
+
+export const getPaymentMethodData = (value: any) => {
+  return ORDER_PAYMENT_METHOD_DATA.find((e) => e.value === value)
 }

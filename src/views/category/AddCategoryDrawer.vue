@@ -44,6 +44,24 @@
           <a-textarea class="!min-h-[100px]" v-model:value="formState.description" auto-size />
         </a-form-item>
 
+        <a-form-item class="!col-span-2" label="Chọn nhãn hiệu" name="brands">
+          <div class="flex-center gap-2">
+            <c-select-search
+              v-model:value="formState.brands"
+              placeholder="Vd: samsung, apple, ..."
+              :search="selectDataStore.searchBrandList"
+              mode="multiple"
+              default-data="brand"
+              :extra-data="formState.brands_data"
+            />
+            <add-brand-drawer>
+              <template #button>
+                <create-button />
+              </template>
+            </add-brand-drawer>
+          </div>
+        </a-form-item>
+
         <a-form-item class="!col-span-2" label="Icon" name="icon">
           <c-image v-model="formState.icon" type="multiple" />
         </a-form-item>
@@ -73,6 +91,9 @@ import { ref, reactive, computed } from 'vue'
 //COMPONENTS
 import CCheckboxNumber from '@/components/common/checkbox/CCheckboxNumber.vue'
 import CImage from '@/components/common/upload/CImage.vue'
+import CSelectSearch from '@/components/common/select/CSelectSearch.vue'
+import AddBrandDrawer from '@/views/brand/AddBrandDrawer.vue'
+import CreateButton from '@/components/common/button/CreateButton.vue'
 
 //PINIA
 import { useCategoryStore } from '@/stores/category'
@@ -82,6 +103,9 @@ import { useRootStore } from '@/stores/root'
 //UTILS
 import { handle_error, handle_success } from '@/utils/message'
 import { clone } from '@/utils/clone'
+
+//TYPES
+import type { SelectConfigItem } from '@/types/index'
 
 const emits = defineEmits<{
   (e: 'getData'): void
@@ -106,7 +130,9 @@ const formState = reactive({
   code: '',
   description: '',
   status: 0,
-  icon: [] as string[]
+  icon: [] as string[],
+  brands: [] as number[],
+  brands_data: [] as SelectConfigItem[]
 })
 
 const open = ref<boolean>(false)
@@ -129,7 +155,7 @@ const onFinish = async (values: any) => {
     await formRef.value?.validate()
     loading.value = true
 
-    let data: any = { ...formState }
+    const { brands_data, ...data } = { ...formState } as any
 
     if (isEdit.value) {
       await updateCategory(data?.id, data)
@@ -157,6 +183,17 @@ const reset = (data?: any) => {
   formState.code = data?.code || ''
   formState.description = data?.description || ''
   formState.icon = clone(data?.icon || [])
+  formState.brands = data?.brands?.map((brand: any) => brand?.id) || []
+  formState.brands_data =
+    data?.brands?.map((brand: any) => {
+      return {
+        value: brand?.id,
+        label: brand?.name,
+        image: brand?.icon
+      }
+    }) || []
+    console.log(data.brands);
+    
   formState.status = data?.status || 0
 }
 

@@ -185,6 +185,7 @@ const noteState = reactive({
 
 const subDataState = reactive({
   brand_id: null as number | null,
+  brand_data: null as any,
   suppliers: [] as number[],
   tags: [],
   images: [] as string[],
@@ -239,10 +240,11 @@ const onFinish = async (values: any) => {
   try {
     await checkFormValidate()
     submitLoading.value = true
+    const { brand_data, ...subData } = subDataState as any
     let data = {
       ...infoState,
       ...noteState,
-      ...subDataState,
+      ...subData,
       ...priceState,
       ...warehouseState,
       variants: productVariantsDataRef.value?.getVariantsData() || [],
@@ -287,6 +289,9 @@ const fillFormData = async (res: PRODUCT_RESPONSE) => {
   infoState.name = res.name || ''
 
   subDataState.brand_id = res.brand?.id || null
+  subDataState.brand_data = res.brand?.id
+    ? { value: res.brand.id, label: res.brand.name, image: res.brand.icon }
+    : null
   subDataState.category_id = res.category?.id || null
   subDataState.images = res.images || []
   subDataState.suppliers = res.suppliers?.map((supplier) => supplier.id) || []

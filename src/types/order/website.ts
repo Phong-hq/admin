@@ -15,6 +15,7 @@ export type ORDER_RESPONSE = Nullable<{
   data_payments: any
   data_tax: any
   delivery_fee: any
+  deliveryMethod: 'delivery' | 'pickup'
   discount: number
   done_at: string
   inventory: BASE_OBJECT_RESPONSE
@@ -24,6 +25,7 @@ export type ORDER_RESPONSE = Nullable<{
   office_id: number
   order_address: SHIPPING_ADDRESS_RESPONSE
   order_items: ORDER_ITEMS_RESPONSE[]
+  paymentMethod: 'cash' | 'bank_transfer' | 'cod'
   payment_methods: any
   payments: number
   price_policy: string

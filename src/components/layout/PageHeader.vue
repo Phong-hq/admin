@@ -1,9 +1,10 @@
 <template>
   <header class="app-header flex justify-between items-center sm:mx-4 mx-3 sm:mt-4 mt-3 sm:px-6 px-4 py-3">
     <div class="flex items-center gap-3">
-      <div class="mobile-menu-btn cursor-pointer text-lg" @click="pageMenuMobileDrawerRef?.show()">
+      <div class="mobile-menu-btn cursor-pointer text-lg sm:hidden" @click="pageMenuMobileDrawerRef?.show()">
         <MenuOutlined />
       </div>
+      <page-header-menu class="hidden sm:flex" />
     </div>
     <div class="flex justify-end items-center gap-4">
       <a-dropdown>
@@ -35,6 +36,7 @@ import { ref, computed } from 'vue'
 import { LogoutOutlined, MenuOutlined, DownOutlined } from '@ant-design/icons-vue'
 // COMPONENT
 import PageMenuMobileDrawer from '@/components/layout/PageMenuMobileDrawer.vue'
+import PageHeaderMenu from '@/components/layout/PageHeaderMenu.vue'
 import logoImage from '@/assets/images/hnp.png'
 //PINIA
 import { useAuthStore } from '@/stores/auth'

@@ -3,7 +3,7 @@
     <p class="heading-1">Phân loại</p>
     <a-form
       :model="formState"
-      class=""
+      class="form-2"
       ref="formRef"
       name="basic"
       :label-col="{ span: 24 }"
@@ -45,7 +45,7 @@
         />
       </a-form-item>
 
-      <a-form-item class="" label="Chính sách giá" name="price_policy" :disabled="disabled">
+      <a-form-item class="!col-span-2" label="Chính sách giá" name="price_policy" :disabled="disabled">
         <c-select
           v-model:value="formState.price_policy"
           :data="PRICE_POLICY_DATA"
@@ -53,19 +53,31 @@
         />
       </a-form-item>
 
-      <a-form-item class="" label="Ghi chú" name="note" :disabled="disabled">
+      <a-form-item class="!col-span-2" label="Ghi chú" name="note" :disabled="disabled">
         <a-textarea
           v-model:value="formState.note"
           @change="handleInputChange('note', formState.note)"
         />
       </a-form-item>
     </a-form>
+
+    <a-divider class="!my-3" />
+
+    <div class="flex items-center justify-between gap-2 py-1">
+      <p class="text-C82 !mb-0">Cách nhận hàng</p>
+      <a-tag class="!m-0" :color="deliveryMethodData?.color">{{ deliveryMethodData?.label }}</a-tag>
+    </div>
+    <div class="flex items-center justify-between gap-2 py-1 mt-2">
+      <p class="text-C82 !mb-0">Hình thức thanh toán</p>
+      <a-tag class="!m-0" :color="paymentMethodData?.color">{{ paymentMethodData?.label }}</a-tag>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
 import type { ORDER_RESPONSE } from '@/types/order/website'
+import { getDeliveryMethodData, getPaymentMethodData } from '@/constant/order'
 
 // COMPONENT
 import CSelect from '@/components/common/select/CSelect.vue'
@@ -85,6 +97,8 @@ type FORM = {
   office_id: number | null
   price_policy: string
   note: string
+  deliveryMethod: 'delivery' | 'pickup'
+  paymentMethod: 'cash' | 'bank_transfer' | 'cod'
 }
 
 type Props = {
@@ -118,6 +132,9 @@ const formState = computed<FORM>({
     return props.modelValue
   }
 })
+
+const deliveryMethodData = computed(() => getDeliveryMethodData(formState.value.deliveryMethod))
+const paymentMethodData = computed(() => getPaymentMethodData(formState.value.paymentMethod))
 
 const rules = computed(() => {
   return {

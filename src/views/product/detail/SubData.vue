@@ -19,6 +19,7 @@
           v-model:value="formState.category_id"
           placeholder="Chọn danh mục"
           default-data="category"
+          @change="handleCategoryChange"
         />
         <add-category-drawer>
           <template #button>
@@ -41,10 +42,13 @@
     <a-form-item class="!col-span-2" label="Nhãn hiệu" name="brand_id">
       <div class="flex-center gap-2">
         <c-select-search
-          :search="searchBrandList"
+          :search="searchBrandByCategoryList"
+          :params="brandParams"
+          :extra-data="brandExtraData"
+          :disabled="!formState.category_id"
+          :placeholder="formState.category_id ? 'Chọn nhãn hiệu' : 'Chọn danh mục trước'"
           v-model:value="formState.brand_id"
-          placeholder="Chọn nhãn hiệu"
-          default-data="brand"
+          default-data=""
         />
         <add-brand-drawer>
           <template #button>
@@ -78,6 +82,7 @@
 <script lang="ts" setup>
 import { ref, reactive, computed } from 'vue'
 import { handle_error, handle_success } from '@/utils/message'
+import type { SelectConfigItem } from '@/types/index'
 
 //COMPONENTS
 import CSelect from '@/components/common/select/CSelect.vue'
@@ -93,6 +98,7 @@ import AddBrandDrawer from '@/views/brand/AddBrandDrawer.vue'
 
 type FORM = {
   brand_id: number | null
+  brand_data?: SelectConfigItem | null
   suppliers: any
   tags: string[]
   images: string[]
@@ -112,7 +118,7 @@ const emits = defineEmits<{
 
 const selectDataStore = useSelectDataStore()
 
-const { searchBrandList, searchCategoryList, searchSupplierList } = selectDataStore
+const { searchBrandByCategoryList, searchCategoryList, searchSupplierList } = selectDataStore
 
 const select_data = computed(() => selectDataStore.selectList)
 const formState = computed<FORM>({
@@ -124,10 +130,22 @@ const formState = computed<FORM>({
   }
 })
 
+// Nhãn hiệu phụ thuộc danh mục: chỉ load list khi đã chọn danh mục
+const brandParams = computed(() => ({ category_id: formState.value.category_id }))
+
+// Giữ label nhãn hiệu đang chọn khi mở form sửa
+const brandExtraData = computed<SelectConfigItem[]>(() =>
+  formState.value.brand_data ? [formState.value.brand_data] : []
+)
+
+const handleCategoryChange = () => {
+  formState.value.brand_id = null
+  formState.value.brand_data = null
+}
+
 const rules = computed(() => {
   return {
-    category_id: [{ required: !props.isEdit, message: 'Danh mục phẩm bỏ trống!', trigger: 'blur' }],
-    brand_id: [{ required: !props.isEdit, message: 'Nhãn hiệu phẩm bỏ trống!', trigger: 'blur' }]
+    category_id: [{ required: !props.isEdit, message: 'Danh mục phẩm bỏ trống!', trigger: 'blur' }]
   }
 })
 

@@ -2,6 +2,7 @@
   <CSelect
     :data="data"
     :search-loading="loading"
+    :loading="loading"
     @search="handleSearch"
     :filter-option="false"
     has-search
@@ -168,9 +169,19 @@ watch(
   async (newValue, oldValue) => {
     if (newValue != undefined) {
       if (JSON.stringify(newValue) != JSON.stringify(oldValue)) {
-        if (defaultSearchFunction.value != null)
-          defautDataWithParams.value = (await defaultSearchFunction.value('', props.params)) ?? []
-        else if (props.search) defautDataWithParams.value = await props.search('', props.params)
+        try {
+          loading.value = true
+          searching.value = false
+          searchData.value = []
+          if (defaultSearchFunction.value != null)
+            defautDataWithParams.value = (await defaultSearchFunction.value('', props.params)) ?? []
+          else if (props.search) defautDataWithParams.value = await props.search('', props.params)
+        } catch (error) {
+          defautDataWithParams.value = []
+          console.log(error)
+        } finally {
+          loading.value = false
+        }
       }
     }
   },

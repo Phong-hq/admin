@@ -31,7 +31,9 @@
           v-else
         />
       </div>
-      <div class="shrink-0 w-full xl:w-[360px] flex flex-col gap-y-4">
+      <div
+        class="shrink-0 w-full xl:w-[360px] flex flex-col gap-y-4 xl:sticky xl:top-4 xl:self-start xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto xl:pr-1"
+      >
         <div class="page-box-white" v-if="isEdit">
           <p class="heading-1">Thông tin đơn hàng</p>
           <info ref="infoRef" :order="order" :is-edit="isEdit" :disabled="disabled" @get-data="handleGetData" />
@@ -58,7 +60,12 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import type { ORDER_RESPONSE } from '@/types/order/website'
-import { ORDER_STATUS, ORDER_STATUS_DATA } from '@/constant/order'
+import {
+  ORDER_STATUS,
+  ORDER_STATUS_DATA,
+  ORDER_DELIVERY_METHOD,
+  ORDER_PAYMENT_METHOD
+} from '@/constant/order'
 import { DATE_RENDER, TIME_RENDER } from '@/utils/dayjs-helper'
 
 // COMPONENT
@@ -113,7 +120,9 @@ const classyState = reactive({
   inventory_id: null as number | null,
   office_id: null as number | null,
   price_policy: '',
-  note: ''
+  note: '',
+  deliveryMethod: ORDER_DELIVERY_METHOD.Delivery as 'delivery' | 'pickup',
+  paymentMethod: ORDER_PAYMENT_METHOD.Cash as 'cash' | 'bank_transfer' | 'cod'
 })
 
 const order = ref<ORDER_RESPONSE | null>(null)
@@ -141,6 +150,8 @@ const fillFormData = (order: ORDER_RESPONSE) => {
   classyState.note = order?.note ?? ''
   classyState.office_id = order?.office_id ?? null
   classyState.price_policy = order?.price_policy ?? ''
+  classyState.deliveryMethod = order?.deliveryMethod ?? ORDER_DELIVERY_METHOD.Delivery
+  classyState.paymentMethod = order?.paymentMethod ?? ORDER_PAYMENT_METHOD.Cash
   productListRef.value?.fillFormData(order)
   infoRef.value?.fillFormData(order)
 }
