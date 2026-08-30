@@ -124,15 +124,28 @@ const rules = computed(() => {
 })
 const isEdit = computed(() => formState.id != null)
 
-const formState = reactive({
-  id: null as null | number,
+type FORM = {
+  id: number | null
+  name: string
+  code: string
+  description: string
+  status: number
+  icon: string[]
+  brands: number[]
+  brands_data: SelectConfigItem[]
+}
+
+type CATEGORY_PAYLOAD = Omit<FORM, 'brands_data'>
+
+const formState = reactive<FORM>({
+  id: null,
   name: '',
   code: '',
   description: '',
   status: 0,
-  icon: [] as string[],
-  brands: [] as number[],
-  brands_data: [] as SelectConfigItem[]
+  icon: [],
+  brands: [],
+  brands_data: []
 })
 
 const open = ref<boolean>(false)
@@ -150,16 +163,17 @@ const hide = () => {
   open.value = false
 }
 
-const onFinish = async (values: any) => {
+const onFinish = async () => {
   try {
     await formRef.value?.validate()
     loading.value = true
 
-    const { brands_data, ...data } = { ...formState } as any
+    const { brands_data, ...data }: FORM = { ...formState }
+    const payload: CATEGORY_PAYLOAD = data
 
     if (isEdit.value) {
-      await updateCategory(data?.id, data)
-    } else await createCategory(data)
+      await updateCategory(payload.id, payload)
+    } else await createCategory(payload)
     if(isQuickCreate.value) await selectDataStore.getCategoryList(true)
     handle_success(isEdit.value ? 'Cập nhật thành công!' : 'Thêm thành công!')
     emits('getData')
@@ -192,8 +206,6 @@ const reset = (data?: any) => {
         image: brand?.icon
       }
     }) || []
-    console.log(data.brands);
-    
   formState.status = data?.status || 0
 }
 

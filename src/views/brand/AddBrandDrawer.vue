@@ -95,7 +95,7 @@ import CCheckboxNumber from '@/components/common/checkbox/CCheckboxNumber.vue'
 import CImage from '@/components/common/upload/CImage.vue'
 import CSelect from '@/components/common/select/CSelect.vue'
 import CSelectSearch from '@/components/common/select/CSelectSearch.vue'
-import AddCategoryDrawer from '@/views/category/AddCategoryDrawer.vue'
+import { AddCategoryDrawerAsync as AddCategoryDrawer } from '@/views/lazyDrawers'
 import CreateButton from '@/components/common/button/CreateButton.vue'
 
 //PINIA
