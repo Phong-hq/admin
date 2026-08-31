@@ -225,7 +225,22 @@ onMounted(async () => {
 })
 
 const additional_data_string = ref()
-const additional_data = ref<{ name: string; value: string }[]>([])
+
+const DEFAULT_ADDITIONAL_KEYS = ['specs', 'info']
+
+const ensureDefaultAdditionalData = (
+  data: { name: string; value: string }[]
+): { name: string; value: string }[] => {
+  const result = [...data]
+  DEFAULT_ADDITIONAL_KEYS.forEach((key) => {
+    if (!result.some((e) => e.name === key)) {
+      result.push({ name: key, value: '' })
+    }
+  })
+  return result
+}
+
+const additional_data = ref<{ name: string; value: string }[]>(ensureDefaultAdditionalData([]))
 const variants = ref([])
 const name = ref('')
 
@@ -306,7 +321,7 @@ const fillFormData = async (res: PRODUCT_RESPONSE) => {
   warehouseState.weight_type = res.weight_type || ''
   warehouseState.dimension = res.dimension || ''
 
-  additional_data.value = res.additional_data || []
+  additional_data.value = ensureDefaultAdditionalData(res.additional_data || [])
 
   // va
   // infoState.category_id = res.category?.id || ''
