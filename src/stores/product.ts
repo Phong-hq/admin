@@ -69,7 +69,7 @@ export const useProductStore = defineStore('productStore', {
     exportProduct(params?: any): Promise<string> {
       return new Promise<string>(async (resolve, reject) => {
         try {
-          const res: string = await axios.get('/api/v1/admin/product/variant/export', {
+          const res: string = await axios.get('/api/v1/admin/product/item/export?include_html=1', {
             params,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             responseType: 'blob'
