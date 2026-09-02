@@ -7,7 +7,7 @@ export type CATEGORY_RESPONSE = Nullable<{
   code: string
   created_at: string
   description: string
-  icon: string
+  icon: string[]
   name: string
   slug: string
   updated_at: string

@@ -33,6 +33,9 @@
           <template v-else-if="column.key == 'status'">
             <box-active class="mx-auto" :value="record.status" />
           </template>
+          <template v-else-if="column.key == 'show_on_home'">
+            <box-active class="mx-auto" :value="record.show_on_home" />
+          </template>
           <template v-else-if="column.key == 'category'">
             <div class="flex gap-y-2 flex-wrap">
               <a-tag v-for="item in record.categories" :key="item.id">{{ item.name }}</a-tag>
@@ -152,6 +155,18 @@ const columns = [
     width: 'md'
   },
   {
+    title: 'Hiển thị trang chủ',
+    key: 'show_on_home',
+    sorter: true,
+    inputProps: {
+      inputType: 'check-number',
+      data: {
+        label: 'Hiển thị'
+      }
+    },
+    width: 'md'
+  },
+  {
     title: 'Ngày tạo',
     key: 'created_at',
     isFilter: true,
@@ -206,7 +221,9 @@ const handleRowUpdate = async (id: any, data: any) => {
     let item: any = brandList.value?.find((brand) => brand.id == id)
     if (item) {
       item = { ...item, ...data }
-      item.categories = editableRow.value[id].categories
+      item.categories = (editableRow.value[id]?.categories || item.categories || []).map(
+        (category: any) => category?.id ?? category
+      )
       tableLoading.value = true
       await updateBrand(id, item)
       await initData()

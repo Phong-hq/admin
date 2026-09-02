@@ -6,9 +6,10 @@ export type BRAND_RESPONSE = Nullable<{
   created_at: string
   category: any
   description: string
-  icon: string
+  icon: string[]
   name: string
   slug: string
   updated_at: string
   status: number
+  show_on_home: number
 }>

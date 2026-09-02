@@ -46,6 +46,16 @@ export const useCategoryStore = defineStore('categoryStore', {
         }
       })
     },
+    sortCategory(items: { id: any }[]): Promise<any> {
+      return new Promise<any>(async (resolve, reject) => {
+        try {
+          const res = await axios.post('/api/v1/admin/product/category/sort', { items })
+          resolve(res)
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     importCategory(file: File): Promise<ImportResponse> {
       return new Promise<ImportResponse>(async (resolve, reject) => {
         try {

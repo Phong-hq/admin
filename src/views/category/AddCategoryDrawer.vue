@@ -45,25 +45,70 @@
         </a-form-item>
 
         <a-form-item class="!col-span-2" label="Chọn nhãn hiệu" name="brands">
-          <div class="flex-center gap-2">
-            <c-select-search
-              v-model:value="formState.brands"
-              placeholder="Vd: samsung, apple, ..."
-              :search="selectDataStore.searchBrandList"
-              mode="multiple"
-              default-data="brand"
-              :extra-data="formState.brands_data"
-            />
-            <add-brand-drawer>
-              <template #button>
-                <create-button />
-              </template>
-            </add-brand-drawer>
+          <div class="flex flex-col gap-2">
+            <div
+              class="flex items-center gap-2"
+              v-for="(_, index) in formState.brands"
+              :key="index"
+              draggable="true"
+              @mousedown="handleBrandRowMousedown"
+              @mouseup="handleBrandRowMouseup"
+              @dragstart="handleBrandDragStart(index, $event)"
+              @dragover.prevent
+              @drop="handleBrandDrop(index, $event)"
+              @dragend="handleBrandDragEnd"
+            >
+              <holder-outlined class="js-brand-drag-handle cursor-move text-gray shrink-0" />
+              <c-select-search
+                class="!flex-1"
+                v-model:value="formState.brands[index]"
+                placeholder="Vd: samsung, apple, ..."
+                :search="selectDataStore.searchBrandList"
+                default-data="brand"
+                :extra-data="formState.brands_data"
+              />
+              <delete-outlined
+                class="cursor-pointer text-error shrink-0"
+                @click="removeBrandRow(index)"
+              />
+            </div>
+            <div class="flex-center gap-2">
+              <a-button type="dashed" class="!flex-1" @click="addBrandRow">
+                <template #icon>
+                  <plus-outlined />
+                </template>
+                Thêm nhãn hiệu
+              </a-button>
+              <add-brand-drawer>
+                <template #button>
+                  <create-button />
+                </template>
+              </add-brand-drawer>
+            </div>
           </div>
         </a-form-item>
 
         <a-form-item class="!col-span-2" label="Icon" name="icon">
-          <c-image v-model="formState.icon" type="multiple" />
+          <a-select
+            class="!w-full"
+            v-model:value="formState.icon"
+            placeholder="Chọn icon"
+            allow-clear
+            show-search
+            option-filter-prop="label"
+            :options="CATEGORY_ICON_OPTIONS"
+          >
+            <template #option="{ label, svg }">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 shrink-0" v-html="svg"></span>
+                <span>{{ label }}</span>
+              </div>
+            </template>
+          </a-select>
+          <div class="flex items-center gap-2 mt-2 text-gray" v-if="selectedIcon">
+            <span class="w-6 h-6 shrink-0" v-html="selectedIcon"></span>
+            <span>{{ CATEGORY_ICON_LABELS[formState.icon] || formState.icon }}</span>
+          </div>
         </a-form-item>
 
         <a-form-item class="!col-span-2" label="Trạng thái" name="status">
@@ -87,10 +132,10 @@
 
 <script lang="ts" setup>
 import { ref, reactive, computed } from 'vue'
+import { PlusOutlined, HolderOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 
 //COMPONENTS
 import CCheckboxNumber from '@/components/common/checkbox/CCheckboxNumber.vue'
-import CImage from '@/components/common/upload/CImage.vue'
 import CSelectSearch from '@/components/common/select/CSelectSearch.vue'
 import AddBrandDrawer from '@/views/brand/AddBrandDrawer.vue'
 import CreateButton from '@/components/common/button/CreateButton.vue'
@@ -102,7 +147,13 @@ import { useRootStore } from '@/stores/root'
 
 //UTILS
 import { handle_error, handle_success } from '@/utils/message'
-import { clone } from '@/utils/clone'
+
+//CONSTANT
+import {
+  CATEGORY_ICONS,
+  CATEGORY_ICON_LABELS,
+  CATEGORY_ICON_OPTIONS
+} from '@/constant/category-icon'
 
 //TYPES
 import type { SelectConfigItem } from '@/types/index'
@@ -130,12 +181,15 @@ type FORM = {
   code: string
   description: string
   status: number
-  icon: string[]
-  brands: number[]
+  icon: string
+  brands: (number | null)[]
   brands_data: SelectConfigItem[]
 }
 
-type CATEGORY_PAYLOAD = Omit<FORM, 'brands_data'>
+type CATEGORY_PAYLOAD = Omit<FORM, 'brands_data' | 'icon' | 'brands'> & {
+  icon: string[]
+  brands: number[]
+}
 
 const formState = reactive<FORM>({
   id: null,
@@ -143,10 +197,12 @@ const formState = reactive<FORM>({
   code: '',
   description: '',
   status: 0,
-  icon: [],
+  icon: '',
   brands: [],
   brands_data: []
 })
+
+const selectedIcon = computed(() => CATEGORY_ICONS[formState.icon] || '')
 
 const open = ref<boolean>(false)
 const loading = ref<boolean>(false)
@@ -169,7 +225,11 @@ const onFinish = async () => {
     loading.value = true
 
     const { brands_data, ...data }: FORM = { ...formState }
-    const payload: CATEGORY_PAYLOAD = data
+    const payload: CATEGORY_PAYLOAD = {
+      ...data,
+      icon: data.icon ? [data.icon] : [],
+      brands: data.brands.filter((id): id is number => id != null)
+    }
 
     if (isEdit.value) {
       await updateCategory(payload.id, payload)
@@ -196,7 +256,8 @@ const reset = (data?: any) => {
   formState.name = data?.name || ''
   formState.code = data?.code || ''
   formState.description = data?.description || ''
-  formState.icon = clone(data?.icon || [])
+  const iconKey = Array.isArray(data?.icon) ? data.icon[0] : data?.icon
+  formState.icon = typeof iconKey === 'string' && CATEGORY_ICONS[iconKey] ? iconKey : ''
   formState.brands = data?.brands?.map((brand: any) => brand?.id) || []
   formState.brands_data =
     data?.brands?.map((brand: any) => {
@@ -211,6 +272,52 @@ const reset = (data?: any) => {
 
 const handleChange = (e: any) => {
   console.log(e)
+}
+
+const addBrandRow = () => {
+  formState.brands.push(null)
+}
+
+const removeBrandRow = (index: number) => {
+  formState.brands.splice(index, 1)
+}
+
+// mousedown fires on the actual handle icon; dragstart fires on the ancestor
+// that has draggable=true (the row div), so the handle restriction is tracked separately.
+const canDragBrandRow = ref(false)
+const dragBrandIndex = ref<number | null>(null)
+
+const handleBrandRowMousedown = (event: MouseEvent) => {
+  canDragBrandRow.value = !!(event.target as HTMLElement).closest('.js-brand-drag-handle')
+}
+
+const handleBrandRowMouseup = () => {
+  canDragBrandRow.value = false
+}
+
+const handleBrandDragStart = (index: number, event: DragEvent) => {
+  if (!canDragBrandRow.value) {
+    event.preventDefault()
+    return
+  }
+  dragBrandIndex.value = index
+  event.dataTransfer?.setData('text/plain', String(index))
+}
+
+const handleBrandDrop = (index: number, event: DragEvent) => {
+  event.preventDefault()
+  if (dragBrandIndex.value === null || dragBrandIndex.value === index) {
+    dragBrandIndex.value = null
+    return
+  }
+  const [moved] = formState.brands.splice(dragBrandIndex.value, 1)
+  formState.brands.splice(index, 0, moved)
+  dragBrandIndex.value = null
+}
+
+const handleBrandDragEnd = () => {
+  dragBrandIndex.value = null
+  canDragBrandRow.value = false
 }
 
 const quickCreate = () => {

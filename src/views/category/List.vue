@@ -5,6 +5,15 @@
       <div class="flex justify-between items-center">
         <p class="heading-1">Danh mục</p>
         <div class="flex gap-2">
+          <a-button
+            type="primary"
+            ghost
+            :loading="sortLoading"
+            v-if="hasOrderChanged"
+            @click="handleSaveSort"
+          >
+            Lưu thứ tự
+          </a-button>
           <import-button :action="importCategory" @success="initData" />
           <a-button type="primary" @click="addCategoryDrawerRef?.show()">
             <template #icon>
@@ -21,27 +30,26 @@
         primary-key="id"
         expand-title="test"
         db-click
+        draggable
         :loading="tableLoading"
         @get-data="initData"
         @edit-row="handleRowUpdate"
+        @reorder="handleReorder"
       >
         <template #bodyCell="{ text, record, column }">
-          <template v-if="column.key == 'created_at'">
+          <template v-if="column.key == 'drag'">
+            <holder-outlined class="js-drag-handle cursor-move text-gray" />
+          </template>
+          <template v-else-if="column.key == 'created_at'">
             <box-created-time :time="text" />
           </template>
           <template v-else-if="column.key == 'icon'">
-            <div class="flex-center" v-if="typeof text === 'string'">
-              <img class="max-w-[60px]" :src="text" alt="" />
+            <div class="flex-center" v-if="getCategoryIcon(record.icon?.[0])">
+              <a-tooltip :title="CATEGORY_ICON_LABELS[record.icon?.[0]] || record.icon?.[0]">
+                <span class="w-6 h-6" v-html="getCategoryIcon(record.icon?.[0])"></span>
+              </a-tooltip>
             </div>
-            <a-space class="w-full justify-center" v-else>
-              <img
-                class="max-w-[60px]"
-                :src="item"
-                alt=""
-                v-for="item in record.icon"
-                :key="item"
-              />
-            </a-space>
+            <p class="text-center text-gray" v-else>-</p>
           </template>
           <template v-else-if="column.key == 'status'">
             <box-active class="mx-auto" :value="record.status" />
@@ -62,7 +70,7 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, computed } from 'vue'
 import type { COLUMN_TYPE } from '@/types/table'
-import { PlusOutlined, FileExcelOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined, FileExcelOutlined, HolderOutlined } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 import { handle_error, handle_success } from '@/utils/message'
 
@@ -79,17 +87,22 @@ import AddCategoryDrawer from './AddCategoryDrawer.vue'
 import CBreadcrumb from '@/components/common/breadcrumb/CBreadcrumb.vue'
 import ImportButton from '@/components/common/button/ImportButton.vue'
 
+//CONSTANT
+import { getCategoryIcon, CATEGORY_ICON_LABELS } from '@/constant/category-icon'
+
 const categoryStore = useCategoryStore()
 const rootStore = useRootStore()
 const router = useRouter()
 
-const { getCategoryList, deleteCategory, updateCategory, importCategory } = categoryStore
+const { getCategoryList, deleteCategory, updateCategory, importCategory, sortCategory } =
+  categoryStore
 const { confirm } = rootStore
 
 const categoriesList = computed(() => categoryStore.categoriesList)
 const meta = computed(() => categoryStore.categoryMeta)
 
 const columns = [
+  { title: '', key: 'drag', align: 'center', width: 40, noResizable: true },
   {
     title: 'Mã',
     key: 'code',
@@ -98,7 +111,7 @@ const columns = [
     inputProps: { inputType: 'text' }
   },
   {
-    title: 'Hình',
+    title: 'Icon',
     width: 'sm',
     key: 'icon'
   },
@@ -146,16 +159,37 @@ onMounted(() => {
 })
 
 const tableLoading = ref(false)
+const sortLoading = ref(false)
+const hasOrderChanged = ref(false)
 const addCategoryDrawerRef = ref<InstanceType<typeof AddCategoryDrawer> | null>(null)
 const initData = async (param?: any) => {
   try {
     tableLoading.value = true
-
-    await getCategoryList(param)
+    hasOrderChanged.value = false
+    await getCategoryList({ ...param, 'per-page': 50 })
   } catch (error) {
     handle_error(error)
   } finally {
     tableLoading.value = false
+  }
+}
+
+const handleReorder = (newList: any[]) => {
+  categoryStore.categoriesList = newList
+  hasOrderChanged.value = true
+}
+
+const handleSaveSort = async () => {
+  try {
+    sortLoading.value = true
+    await sortCategory(categoriesList.value.map((category) => ({ id: category.id })))
+    handle_success('Lưu thứ tự thành công')
+    hasOrderChanged.value = false
+    await initData()
+  } catch (error) {
+    handle_error(error)
+  } finally {
+    sortLoading.value = false
   }
 }
 
@@ -179,11 +213,16 @@ const handleDeleteCategory = async (data: any) => {
 
 const handleRowUpdate = async (id: any, data: any) => {
   try {
-    let item = categoriesList.value.find((category) => category.id == id)
+    const item = categoriesList.value.find((category) => category.id == id)
+    console.log('item', item)
     if (item) {
-      item = { ...item, ...data }
+      const merged = { ...item, ...data }
+      const payload = {
+        ...merged,
+        brands: (merged.brands || []).map((brand: any) => brand?.id ?? brand)
+      }
       tableLoading.value = true
-      await updateCategory(id, item)
+      await updateCategory(id, payload)
       await initData()
       handle_success('Cập nhập thành công')
     }

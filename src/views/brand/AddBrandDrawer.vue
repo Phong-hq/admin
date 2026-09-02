@@ -74,6 +74,12 @@
           >
         </a-form-item>
 
+        <a-form-item class="!col-span-2" label="Hiển thị trang chủ" name="show_on_home">
+          <c-checkbox-number v-model="formState.show_on_home"
+            ><p class="font-semibold">Hiển thị</p></c-checkbox-number
+          >
+        </a-form-item>
+
         <!-- <a-form-item class="!col-span-2" label="Trạng thái" name="status" v-if="isEdit">
           <c-select v-model:value="formState.status" :data="STATUS_ACTIVE_DATA" />
         </a-form-item> -->
@@ -129,6 +135,7 @@ const formState = reactive({
   code: '',
   description: '',
   status: 0,
+  show_on_home: 0,
   icon: [] as string[],
   categories: []
 })
@@ -184,6 +191,7 @@ const reset = (data?: any) => {
   formState.icon = data?.icon || []
   formState.categories = data?.categories?.map((category: any) => category?.id) || []
   formState.status = data?.status || 0
+  formState.show_on_home = data?.show_on_home || 0
 }
 
 const handleChange = (e: any) => {

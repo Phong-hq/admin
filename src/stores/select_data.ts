@@ -87,7 +87,7 @@ export const useSelectDataStore = defineStore('selectDataStore', {
             '/api/v1/admin/product/brand?status=1'
           )
           this.selectList.brand = res.items.map((e) => {
-            return { value: e.id, label: e.name, image: e.icon } as SelectConfigItem
+            return { value: e.id, label: e.name, image: e.icon?.[0] } as SelectConfigItem
           })
           resolve(true)
         } catch (error) {
@@ -102,7 +102,7 @@ export const useSelectDataStore = defineStore('selectDataStore', {
             '/api/v1/admin/product/brand?status=1&name=' + key
           )
           const selectResponse = res.items.map((e) => {
-            return { value: e.id, label: e.name, image: e.icon } as SelectConfigItem
+            return { value: e.id, label: e.name, image: e.icon?.[0] } as SelectConfigItem
           })
           if (!key) this.selectList.brand = selectResponse
           resolve(selectResponse)
