@@ -533,6 +533,14 @@ const router = createRouter({
       ]
     },
     {
+      path: '/quick-upload',
+      name: 'quick-upload',
+      component: () => import('@/views/quick-upload/Index.vue'),
+      meta: {
+        breadcrumb: [{ label: 'Tải hình nhanh' }]
+      } as RouteMeta
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('@/views/NotFound.vue'),

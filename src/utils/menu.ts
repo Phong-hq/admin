@@ -119,7 +119,13 @@ export const listMenu = [
     key: 'setting',
     menu: [
       getItem('Cấu hình', '13', [getItem('Cấu hình', 'setting-list')], 'group'),
-      getItem('CMS', 'cms', [getItem('CMS', 'cms')], 'group')
+      getItem('CMS', 'cms', [getItem('CMS', 'cms')], 'group'),
+      getItem(
+        'Tải hình nhanh',
+        'quick-upload-group',
+        [getItem('Tải hình nhanh', 'quick-upload')],
+        'group'
+      )
     ]
   }
 ]

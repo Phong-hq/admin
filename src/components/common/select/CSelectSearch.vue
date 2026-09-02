@@ -27,6 +27,7 @@ interface Props {
     | 'supplier'
     | 'variant'
     | 'product_inventory'
+    | 'product'
     | 'client'
     | 'promotion'
     | 'province'
@@ -81,6 +82,7 @@ const defaultSearchFunction = computed<
   else if (props.defaultData == 'group') return selectDataStore.searchGroupList
   else if (props.defaultData == 'product_inventory')
     return selectDataStore.searchVariantInventoryList
+  else if (props.defaultData == 'product') return selectDataStore.searchProductList
   return null
 })
 

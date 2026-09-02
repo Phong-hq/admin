@@ -41,6 +41,9 @@
           <template v-else-if="column.key == 'unit_price' || column.key == 'sll_price'">
             {{ currency(text) }}
           </template>
+          <template v-else-if="column.key == 'created_at'">
+            <box-created-time :time="text" />
+          </template>
           <template v-else-if="column.key == 'action'">
             <box-action @edit="goToEditPage(record.id)" @remove="handleRemoveProduct(record)" />
             <!-- <a-space>
@@ -135,6 +138,7 @@ import CSelectSearch from '@/components/common/select/CSelectSearch.vue'
 import CTableAnt from '@/components/common/table/CTable.vue'
 import BoxActive from '@/components/common/table/BoxActive.vue'
 import BoxAction from '@/components/common/table/BoxAction.vue'
+import BoxCreatedTime from '@/components/common/table/BoxCreatedTime.vue'
 import UpdateVariantModal from '@/views/product/action/UpdateVariantModal.vue'
 import CBreadcrumb from '@/components/common/breadcrumb/CBreadcrumb.vue'
 import ExportButton from '@/components/common/button/ExportButton.vue'
@@ -233,6 +237,18 @@ const columns2 = [
     sorter: true,
     align: 'center',
     width: 150
+  },
+  {
+    title: 'Ngày tạo',
+    key: 'created_at',
+    sorter: true,
+    isFilter: true,
+    inputProps: {
+      inputType: 'date'
+    },
+    hidden: true,
+    width: 'md',
+    align: 'right'
   },
   { title: '-', key: 'action', align: 'center', width: 50, noResizable: true }
 ] as COLUMN_TYPE[]
