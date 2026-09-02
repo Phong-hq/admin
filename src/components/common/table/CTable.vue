@@ -248,6 +248,7 @@ import dayjs from 'dayjs'
 import { DATE_REQUEST_FORMAT } from '@/utils/dayjs-helper'
 import { PlusOutlined, CloseCircleOutlined, CheckOutlined } from '@ant-design/icons-vue'
 import CDatePicker from '@/components/common/date-picker/CDatePicker.vue'
+import { useRoute } from 'vue-router'
 
 type Props = {
   columns: COLUMN_TYPE[]
@@ -258,7 +259,7 @@ type Props = {
   rowClick?: (item: any) => void
   bordered?: boolean
   widthScrollX?: number | string | boolean
-  
+
   //EXPAND
   expandColumn?: boolean
   expandTitle?: string
@@ -266,6 +267,12 @@ type Props = {
   //SELECTION
   selectionColumn?: boolean
   selectedRowKeys?: any
+
+  //DRAG SORT
+  draggable?: boolean
+
+  //hiển thị/ẩn cột người dùng chọn được lưu localStorage theo key này (mặc định lấy theo route)
+  storageKey?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -274,11 +281,14 @@ const props = withDefaults(defineProps<Props>(), {
   widthScrollX: 1500
 })
 
+const route = useRoute()
+
 const emits = defineEmits<{
   (e: 'getData', id: any): void
   (e: 'startEditRow', id: any): void
   (e: 'update:selectedRowKeys', id: any): void
   (e: 'editRow', id: any, data: any): void
+  (e: 'reorder', data: any[]): void
 }>()
 
 const selectedRowKeysResult = computed({
@@ -441,11 +451,47 @@ const reactiveData = reactive({ ...dataKey, sort: '' as string | undefined, page
 const editableData = ref<any>({})
 const columnsData = ref(formatColumn())
 const expandedRowKeys = ref<string[]>([])
-const columnsSetting = ref<string[]>(
-  props.columns
-    .filter((e) => !e.hidden)
-    .map((e: COLUMN_TYPE) => (typeof e.key == 'string' ? e.key : e?.key?.name || ''))
-)
+
+//LƯU/ĐỌC CỘT ẨN-HIỆN THEO BẢNG TRÊN LOCALSTORAGE
+const COLUMN_SETTING_STORAGE_PREFIX = 'table-columns-setting:'
+const getColumnKey = (e: COLUMN_TYPE) => (typeof e.key == 'string' ? e.key : e?.key?.name || '')
+const allColumnKeys = props.columns.map(getColumnKey)
+const defaultVisibleColumnKeys = props.columns.filter((e) => !e.hidden).map(getColumnKey)
+const columnSettingStorageKey = COLUMN_SETTING_STORAGE_PREFIX + (props.storageKey || route.path)
+
+const loadStoredColumnSetting = (): { visible: string[]; allKeys: string[] } | null => {
+  try {
+    const raw = localStorage.getItem(columnSettingStorageKey)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed?.visible) || !Array.isArray(parsed?.allKeys)) return null
+    return parsed
+  } catch (error) {
+    return null
+  }
+}
+
+const getInitialColumnsSetting = (): string[] => {
+  const stored = loadStoredColumnSetting()
+  if (!stored) return defaultVisibleColumnKeys
+  // cột đã tồn tại lúc lưu -> theo lựa chọn đã lưu; cột mới thêm sau này -> theo mặc định hiện tại
+  return allColumnKeys.filter((key) =>
+    stored.allKeys.includes(key) ? stored.visible.includes(key) : defaultVisibleColumnKeys.includes(key)
+  )
+}
+
+const columnsSetting = ref<string[]>(getInitialColumnsSetting())
+
+watch(columnsSetting, (value) => {
+  try {
+    localStorage.setItem(
+      columnSettingStorageKey,
+      JSON.stringify({ visible: value, allKeys: allColumnKeys })
+    )
+  } catch (error) {
+    // bỏ qua khi localStorage không khả dụng (chế độ ẩn danh, hết dung lượng...)
+  }
+})
 // const selectedRowKeys = ref<any>([])
 
 onMounted(() => {})
@@ -459,6 +505,12 @@ const handleResizeColumn = (w: number, col: any) => {
   } else col.width = w
 }
 
+const dragIndex = ref<number | null>(null)
+// mousedown fires with the real target under the cursor (e.g. the handle icon);
+// dragstart instead fires on the ancestor that actually has draggable=true (the <tr>),
+// so we can't detect the handle from dragstart's event.target directly.
+const canDragRow = ref(false)
+
 const handleCustomRow = (record: any) => ({
   onClick: (event: any) => {
     if (props.rowClick) props.rowClick(record)
@@ -470,7 +522,47 @@ const handleCustomRow = (record: any) => ({
   }, // double click row
   onContextmenu: (event: any) => {}, // right button click row
   onMouseenter: (event: any) => {}, // mouse enter row
-  onMouseleave: (event: any) => {} // mouse leave row
+  onMouseleave: (event: any) => {}, // mouse leave row
+
+  //DRAG SORT
+  draggable: props.draggable,
+  onMousedown: (event: MouseEvent) => {
+    if (!props.draggable) return
+    canDragRow.value = !!(event.target as HTMLElement).closest('.js-drag-handle')
+  },
+  onMouseup: () => {
+    canDragRow.value = false
+  },
+  onDragstart: (event: DragEvent) => {
+    if (!props.draggable || !canDragRow.value) {
+      event.preventDefault()
+      return
+    }
+    dragIndex.value = getIndex(record[props.primaryKey])
+    event.dataTransfer?.setData('text/plain', String(record[props.primaryKey]))
+  },
+  onDragover: (event: DragEvent) => {
+    if (!props.draggable || dragIndex.value === null) return
+    event.preventDefault()
+  },
+  onDrop: (event: DragEvent) => {
+    if (!props.draggable || dragIndex.value === null) return
+    event.preventDefault()
+    const targetIndex = getIndex(record[props.primaryKey])
+    if (targetIndex === -1 || targetIndex === dragIndex.value) {
+      dragIndex.value = null
+      return
+    }
+    const newData = [...props.data]
+    const [moved] = newData.splice(dragIndex.value, 1)
+    newData.splice(targetIndex, 0, moved)
+    dragIndex.value = null
+    emits('reorder', newData)
+  },
+  onDragend: () => {
+    dragIndex.value = null
+    canDragRow.value = false
+  }
 })
 
 const handleEditRow = (item: any) => {
