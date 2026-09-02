@@ -31,7 +31,7 @@ export type SelectConfigItem = {
 
 export type SelectSearchConfig = {
   search?: (id: string, params?: any) => Promise<SelectConfig>
-  defaultData: 'inventory' | 'category' | 'brand' | 'office' | 'supplier' | 'variant' | 'product_inventory'
+  defaultData: 'inventory' | 'category' | 'brand' | 'office' | 'supplier' | 'variant' | 'product_inventory' | 'product'
   extraData?: SelectConfigItem | string
   params?: any
   suffix?: boolean

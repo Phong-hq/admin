@@ -6,7 +6,7 @@ import type { BRAND_RESPONSE } from '@/types/product/brand'
 import type { CATEGORY_RESPONSE } from '@/types/product/category'
 import type { SelectConfigItem } from '@/types'
 import type { SUPPLIER_RESPONSE } from '@/types/setting/supplier'
-import type { PRODUCT_VARIANTS_RESPONSE } from '@/types/product/product'
+import type { PRODUCT_RESPONSE, PRODUCT_VARIANTS_RESPONSE } from '@/types/product/product'
 import type { INVENTORY_RESPONSE } from '@/types/inventory/inventory'
 import type { CLIENT_RESPONSE } from '@/types/person/client'
 import { isJsonString } from '@/utils/json'
@@ -34,6 +34,7 @@ export const useSelectDataStore = defineStore('selectDataStore', {
       office: [] as SelectConfigItem[],
       inventory: [] as SelectConfigItem[],
       variant: [] as SelectConfigItem[],
+      product: [] as SelectConfigItem[],
       client: [] as SelectConfigItem[],
       promotion: [] as SelectConfigItem[],
       province: [] as SelectConfigItem[],
@@ -341,6 +342,27 @@ export const useSelectDataStore = defineStore('selectDataStore', {
             } as SelectConfigItem
           })
           if (!key) this.selectList.variant = selectResponse
+          resolve(selectResponse)
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
+
+    async searchProductList(key: string, params?: any) {
+      return new Promise<SelectConfigItem[]>(async (resolve, reject) => {
+        try {
+          const res: DataWithMetaResponse<PRODUCT_RESPONSE[]> = await axios.get(
+            '/api/v1/admin/product/item?product_name=' + key,
+            { params }
+          )
+          const selectResponse = res.items.map((e) => {
+            return {
+              value: e.id,
+              label: e.name || '',
+              image: (e.images ?? [''])[0]
+            } as SelectConfigItem
+          })
           resolve(selectResponse)
         } catch (error) {
           reject(error)
