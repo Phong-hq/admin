@@ -37,7 +37,7 @@
             :name="item.name"
             v-else-if="item.type == SCHEMAS.NUMBER"
           >
-            <a-input-number class="!w-[200px]" v-model:value="formState[item.name]" />
+            <a-input-number class="!w-full" v-model:value="formState[item.name]" />
           </a-form-item>
 
           <a-form-item
@@ -56,7 +56,7 @@
             v-else-if="item.type == SCHEMAS.DATE_TIME"
           >
             <a-date-picker
-              class="date-picker-primary"
+              class="date-picker-primary !w-full"
               v-model:value="formState[item.name]"
               placeholder="Chọn ngày"
             />
@@ -69,7 +69,7 @@
             v-else-if="item.type == SCHEMAS.FILE"
           >
             <c-image
-              class=""
+              class="!w-full"
               v-model="formState[item.name]"
               :type="item.options?.type == 'multiple' ? 'multiple' : undefined"
             />
@@ -82,7 +82,7 @@
             v-else-if="item.type == SCHEMAS.SELECT"
           >
             <c-select
-              class="select-primary"
+              class="select-primary !w-full"
               v-model:value="formState[item.name]"
               :data="item.options?.value"
               :mode="item.options?.type == 'multiple' ? 'multiple' : undefined"
@@ -101,6 +101,7 @@
             <p class="font-semibold">{{ item.name }}</p>
             <relation-input
               v-if="open"
+              class="w-full"
               v-model="formState[item.name]"
               :options="item.options"
               :collection="collection"
@@ -119,7 +120,7 @@
           </a-form-item>
 
           <a-form-item class="!col-span-2" :label="item.name" :name="item.name" v-else>
-            <a-input v-model:value="formState[item.name]">item.name</a-input>
+            <a-input class="!w-full" v-model:value="formState[item.name]" :placeholder="`Nhập ${item.name}`" />
           </a-form-item>
         </template>
 

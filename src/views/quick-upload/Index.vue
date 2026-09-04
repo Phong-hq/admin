@@ -54,12 +54,25 @@
           <a-button
             type="primary"
             :loading="submitting"
-            :disabled="!productId"
+            :disabled="!productId || loadingProduct"
             @click="handleSubmit"
           >
             Gán hình cho sản phẩm
           </a-button>
         </div>
+
+        <a-spin :spinning="loadingProduct">
+          <div v-if="productId" class="flex flex-col gap-4 mt-2">
+            <div>
+              <p class="!mb-1 font-medium">specs</p>
+              <c-editor v-model="specsValue" />
+            </div>
+            <div>
+              <p class="!mb-1 font-medium">info</p>
+              <c-editor v-model="infoValue" />
+            </div>
+          </div>
+        </a-spin>
       </div>
 
       <a-table
@@ -92,6 +105,7 @@ import { ref, computed, watch } from 'vue'
 import { UploadOutlined, CopyOutlined } from '@ant-design/icons-vue'
 import { handle_error, handle_success } from '@/utils/message'
 import { uploadFile } from '@/utils/file-helper'
+import type { PRODUCT_RESPONSE } from '@/types/product/product'
 
 //PINIA
 import { useProductStore } from '@/stores/product'
@@ -100,6 +114,9 @@ import { useRootStore } from '@/stores/root'
 //COMPONENTS
 import CBreadcrumb from '@/components/common/breadcrumb/CBreadcrumb.vue'
 import CSelectSearch from '@/components/common/select/CSelectSearch.vue'
+import CEditor from '@/components/common/editor/CEditor.vue'
+
+const ADDITIONAL_DATA_KEYS = ['specs', 'info'] as const
 
 type UploadedImage = {
   url: string
@@ -133,6 +150,28 @@ const selectedRowKeys = ref<string[]>([])
 const uploading = ref(false)
 const submitting = ref(false)
 const productId = ref<number | null>(null)
+const loadingProduct = ref(false)
+const currentProduct = ref<PRODUCT_RESPONSE | null>(null)
+const specsValue = ref('')
+const infoValue = ref('')
+
+watch(productId, async (id) => {
+  currentProduct.value = null
+  specsValue.value = ''
+  infoValue.value = ''
+  if (!id) return
+  loadingProduct.value = true
+  try {
+    const product = await getProductItem(id)
+    currentProduct.value = product
+    specsValue.value = product?.additional_data?.find((e) => e.name === 'specs')?.value || ''
+    infoValue.value = product?.additional_data?.find((e) => e.name === 'info')?.value || ''
+  } catch (error) {
+    handle_error(error)
+  } finally {
+    loadingProduct.value = false
+  }
+})
 
 watch(
   images,
@@ -204,14 +243,33 @@ const handleClearAll = async () => {
   }
 }
 
+const buildAdditionalData = () => {
+  const base = currentProduct.value?.additional_data ? [...currentProduct.value.additional_data] : []
+  const values: Record<(typeof ADDITIONAL_DATA_KEYS)[number], string> = {
+    specs: specsValue.value,
+    info: infoValue.value
+  }
+  ADDITIONAL_DATA_KEYS.forEach((key) => {
+    const index = base.findIndex((e) => e.name === key)
+    const entry = { name: key, value: values[key] }
+    if (index > -1) base[index] = entry
+    else base.push(entry)
+  })
+  return base
+}
+
 const handleSubmit = async () => {
-  if (!productId.value || !selectedRowKeys.value.length) return
+  if (!productId.value || !selectedRowKeys.value.length || !currentProduct.value) return
   submitting.value = true
   try {
-    const product = await getProductItem(productId.value)
-    const merged = Array.from(new Set([...(product?.images || []), ...selectedRowKeys.value]))
-    await updateProductItem(productId.value, { images: merged })
-    handle_success('Đã gán hình cho sản phẩm')
+    const merged = Array.from(
+      new Set([...(currentProduct.value.images || []), ...selectedRowKeys.value])
+    )
+    await updateProductItem(productId.value, {
+      images: merged,
+      additional_data: buildAdditionalData()
+    })
+    handle_success('Đã cập nhật sản phẩm')
 
     const assigned = new Set(selectedRowKeys.value)
     images.value = images.value.filter((img) => !assigned.has(img.url))
