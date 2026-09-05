@@ -96,6 +96,23 @@
         </template>
       </a-table>
       <a-empty v-else description="Chưa có hình nào, chọn hình để bắt đầu" />
+
+      <a-divider />
+
+      <p class="heading-1 !mb-2">Soạn nội dung HTML (copy vào file excel import)</p>
+      <c-editor v-model="htmlScratchValue" />
+      <div class="flex items-start gap-2 mt-2">
+        <a-textarea
+          :value="htmlScratchValue"
+          readonly
+          :auto-size="{ minRows: 3, maxRows: 8 }"
+          placeholder="Nội dung HTML sẽ hiện ở đây"
+        />
+        <a-button :disabled="!htmlScratchValue" @click="handleCopyHtml">
+          <template #icon><copy-outlined /></template>
+          Copy
+        </a-button>
+      </div>
     </div>
   </div>
 </template>
@@ -154,6 +171,7 @@ const loadingProduct = ref(false)
 const currentProduct = ref<PRODUCT_RESPONSE | null>(null)
 const specsValue = ref('')
 const infoValue = ref('')
+const htmlScratchValue = ref('')
 
 watch(productId, async (id) => {
   currentProduct.value = null
@@ -221,6 +239,15 @@ const handleCopy = async () => {
   try {
     await navigator.clipboard.writeText(selectedLinksText.value)
     handle_success('Đã copy link')
+  } catch (error) {
+    handle_error('Copy thất bại')
+  }
+}
+
+const handleCopyHtml = async () => {
+  try {
+    await navigator.clipboard.writeText(htmlScratchValue.value)
+    handle_success('Đã copy HTML')
   } catch (error) {
     handle_error('Copy thất bại')
   }

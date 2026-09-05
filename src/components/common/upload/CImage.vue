@@ -105,7 +105,7 @@ const fileListRender = computed<UploadProps['fileList']>(() => {
       const file = fileList.value?.find((file) => file.thumbUrl == e)
       if (file) return file
       else {
-        const link  = e.toString().replace("https://", "https:")
+        const link = e.toString()
         return {
           uid: e,
           name: '',

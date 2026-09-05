@@ -5,7 +5,7 @@
       <div class="flex justify-between items-center flex-wrap mb-2 gap-2">
         <p class="heading-1 !mb-0 sm:w-auto w-full">Sản phẩm</p>
         <div class="sm:flex sm:justify-end grid grid-cols-1 gap-2 sm:w-auto w-full">
-          <export-button :action="exportProduct" name="sản-phẩm" />
+          <export-button :action="exportProduct" :params="currentParams" name="sản-phẩm" />
           <import-button :action="importProduct" @success="initData" />
           <a-button type="primary" @click="router.push({ name: 'product-create' })">
             <template #icon>
@@ -281,10 +281,12 @@ onMounted(() => {
 const tableLoading = ref(false)
 const editableRow = ref<any>({})
 const updateVariantModalRef = ref<InstanceType<typeof UpdateVariantModal> | null>(null)
+const currentParams = ref<any>()
 
 const initData = async (param?: any) => {
   try {
     tableLoading.value = true
+    currentParams.value = param
     await getProductList(param)
   } catch (error) {
     handle_error(error)

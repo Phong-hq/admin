@@ -6,6 +6,8 @@
     v-model:expandedRowKeys="expandedRowKeys"
     :row-selection="rowSelectionConfig"
     :expand-column-width="20"
+    :expand-icon-column-index="dragColumnIndex > -1 ? dragColumnIndex : undefined"
+    :children-column-name="childrenColumnName"
     :customRow="(record: any) => handleCustomRow(record)"
     @resizeColumn="handleResizeColumn"
     @change="handleTableChange"
@@ -263,6 +265,7 @@ type Props = {
   //EXPAND
   expandColumn?: boolean
   expandTitle?: string
+  childrenColumnName?: string
 
   //SELECTION
   selectionColumn?: boolean
@@ -350,6 +353,7 @@ const columnsRender = computed(() => {
   }
 })
 // const columnsRender = computed(() => formatColumn())
+const dragColumnIndex = computed(() => columnsRender.value.findIndex((e: any) => e.key === 'drag'))
 const moveToChild = (array: any, child_key: string, parent_key: string) => {
   const sourceIndex = array.findIndex((item: any) => item.key === child_key)
   if (sourceIndex === -1) {
@@ -505,11 +509,37 @@ const handleResizeColumn = (w: number, col: any) => {
   } else col.width = w
 }
 
-const dragIndex = ref<number | null>(null)
+const draggedId = ref<any>(null)
 // mousedown fires with the real target under the cursor (e.g. the handle icon);
 // dragstart instead fires on the ancestor that actually has draggable=true (the <tr>),
 // so we can't detect the handle from dragstart's event.target directly.
 const canDragRow = ref(false)
+
+// Rows can be nested (tree data via childrenColumnName, default 'children').
+// Reordering only ever swaps two siblings within the same parent's list —
+// dragging a child onto a different parent (or onto a top-level row) is a no-op.
+const childrenKey = computed(() => props.childrenColumnName || 'children')
+
+const findSiblingList = (data: any[], id: any): any[] | null => {
+  if (data.some((e: any) => e[props.primaryKey] == id)) return data
+  for (const item of data) {
+    const children = item[childrenKey.value]
+    if (Array.isArray(children) && children.length) {
+      const found = findSiblingList(children, id)
+      if (found) return found
+    }
+  }
+  return null
+}
+
+const cloneTree = (data: any[]): any[] =>
+  data.map((item: any) => {
+    const children = item[childrenKey.value]
+    if (Array.isArray(children) && children.length) {
+      return { ...item, [childrenKey.value]: cloneTree(children) }
+    }
+    return { ...item }
+  })
 
 const handleCustomRow = (record: any) => ({
   onClick: (event: any) => {
@@ -538,29 +568,41 @@ const handleCustomRow = (record: any) => ({
       event.preventDefault()
       return
     }
-    dragIndex.value = getIndex(record[props.primaryKey])
+    draggedId.value = record[props.primaryKey]
     event.dataTransfer?.setData('text/plain', String(record[props.primaryKey]))
   },
   onDragover: (event: DragEvent) => {
-    if (!props.draggable || dragIndex.value === null) return
+    if (!props.draggable || draggedId.value === null) return
     event.preventDefault()
   },
   onDrop: (event: DragEvent) => {
-    if (!props.draggable || dragIndex.value === null) return
+    if (!props.draggable || draggedId.value === null) return
     event.preventDefault()
-    const targetIndex = getIndex(record[props.primaryKey])
-    if (targetIndex === -1 || targetIndex === dragIndex.value) {
-      dragIndex.value = null
+    const targetId = record[props.primaryKey]
+    if (targetId == draggedId.value) {
+      draggedId.value = null
       return
     }
-    const newData = [...props.data]
-    const [moved] = newData.splice(dragIndex.value, 1)
-    newData.splice(targetIndex, 0, moved)
-    dragIndex.value = null
+    const newData = cloneTree(props.data)
+    const sourceList = findSiblingList(newData, draggedId.value)
+    const targetList = findSiblingList(newData, targetId)
+    if (!sourceList || !targetList || sourceList !== targetList) {
+      draggedId.value = null
+      return
+    }
+    const sourceIndex = sourceList.findIndex((e: any) => e[props.primaryKey] == draggedId.value)
+    const targetIndex = sourceList.findIndex((e: any) => e[props.primaryKey] == targetId)
+    if (sourceIndex === -1 || targetIndex === -1) {
+      draggedId.value = null
+      return
+    }
+    const [moved] = sourceList.splice(sourceIndex, 1)
+    sourceList.splice(targetIndex, 0, moved)
+    draggedId.value = null
     emits('reorder', newData)
   },
   onDragend: () => {
-    dragIndex.value = null
+    draggedId.value = null
     canDragRow.value = false
   }
 })

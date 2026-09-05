@@ -192,7 +192,7 @@ export const useSelectDataStore = defineStore('selectDataStore', {
           }
 
           const res: DataWithMetaResponse<CATEGORY_RESPONSE[]> = await axios.get(
-            '/api/v1/admin/product/category?status=1'
+            '/api/v1/admin/product/category?status=1&flat=1'
           )
           this.selectList.category = res.items.map((e) => {
             return { value: e.id, label: e.name } as SelectConfigItem
@@ -207,7 +207,7 @@ export const useSelectDataStore = defineStore('selectDataStore', {
       return new Promise<SelectConfigItem[]>(async (resolve, reject) => {
         try {
           const res: DataWithMetaResponse<CATEGORY_RESPONSE[]> = await axios.get(
-            '/api/v1/admin/product/category?status=1&name=' + key
+            '/api/v1/admin/product/category?status=1&flat=1&name=' + key
           )
           const selectResponse = res.items.map((e) => {
             return { value: e.id, label: e.name } as SelectConfigItem

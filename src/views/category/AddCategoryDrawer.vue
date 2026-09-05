@@ -40,6 +40,15 @@
           <a-input v-model:value="formState.code" />
         </a-form-item>
 
+        <a-form-item class="!col-span-2" label="Danh mục cha" name="parent_id">
+          <c-select-search
+            v-model:value="formState.parent_id"
+            placeholder="Chọn danh mục cha"
+            :search="selectDataStore.searchCategoryList"
+            default-data="category"
+          />
+        </a-form-item>
+
         <a-form-item class="!col-span-2" label="Mô tả" name="description">
           <a-textarea class="!min-h-[100px]" v-model:value="formState.description" auto-size />
         </a-form-item>
@@ -184,6 +193,7 @@ type FORM = {
   icon: string
   brands: (number | null)[]
   brands_data: SelectConfigItem[]
+  parent_id: number | null
 }
 
 type CATEGORY_PAYLOAD = Omit<FORM, 'brands_data' | 'icon' | 'brands'> & {
@@ -199,7 +209,8 @@ const formState = reactive<FORM>({
   status: 0,
   icon: '',
   brands: [],
-  brands_data: []
+  brands_data: [],
+  parent_id: null
 })
 
 const selectedIcon = computed(() => CATEGORY_ICONS[formState.icon] || '')
@@ -268,6 +279,7 @@ const reset = (data?: any) => {
       }
     }) || []
   formState.status = data?.status || 0
+  formState.parent_id = data?.parent_id ?? null
 }
 
 const handleChange = (e: any) => {

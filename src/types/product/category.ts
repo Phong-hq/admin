@@ -13,4 +13,5 @@ export type CATEGORY_RESPONSE = Nullable<{
   updated_at: string
   status: number
   parent_id: number
+  children: CATEGORY_RESPONSE[]
 }>

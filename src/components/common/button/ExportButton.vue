@@ -21,7 +21,7 @@ import { DATE_RESPONSE_FORMAT } from '@/utils/dayjs-helper'
 //UTILS
 
 type Props = {
-  action: (id?: any) => Promise<string>
+  action: (params?: any) => Promise<string>
   params?: any
   name: string
 }
@@ -33,7 +33,7 @@ const loading = ref(false)
 const handleClick = async () => {
   try {
     loading.value = true
-    const res = await props.action()
+    const res = await props.action(props.params)
     FileDownload(
       res,
       `${props.name}-${dayjs().format(DATE_RESPONSE_FORMAT)}.xlsx`,

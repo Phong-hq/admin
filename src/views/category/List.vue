@@ -2,7 +2,7 @@
   <c-breadcrumb />
   <div class="w-full page-box-white">
     <div class="min-w-full w-max max-w-full overflow-x-auto">
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center mb-2">
         <p class="heading-1">Danh mục</p>
         <div class="flex gap-2">
           <a-button
@@ -28,7 +28,6 @@
         :data="categoriesList"
         :meta="meta"
         primary-key="id"
-        expand-title="test"
         db-click
         draggable
         :loading="tableLoading"
@@ -38,7 +37,7 @@
       >
         <template #bodyCell="{ text, record, column }">
           <template v-if="column.key == 'drag'">
-            <holder-outlined class="js-drag-handle cursor-move text-gray" />
+            <holder-outlined class="js-drag-handle cursor-move text-gray align-middle" />
           </template>
           <template v-else-if="column.key == 'created_at'">
             <box-created-time :time="text" />
@@ -53,6 +52,9 @@
           </template>
           <template v-else-if="column.key == 'status'">
             <box-active class="mx-auto" :value="record.status" />
+          </template>
+          <template v-else-if="column.key == 'parent_id'">
+            <p>{{ getParentName(record.parent_id) }}</p>
           </template>
           <template v-else-if="column.key == 'action'">
             <box-action
@@ -76,6 +78,7 @@ import { handle_error, handle_success } from '@/utils/message'
 
 //PINIA
 import { useCategoryStore } from '@/stores/category'
+import { useSelectDataStore } from '@/stores/select_data'
 import { useRootStore } from '@/stores/root'
 
 //COMPONENTS
@@ -91,6 +94,7 @@ import ImportButton from '@/components/common/button/ImportButton.vue'
 import { getCategoryIcon, CATEGORY_ICON_LABELS } from '@/constant/category-icon'
 
 const categoryStore = useCategoryStore()
+const selectDataStore = useSelectDataStore()
 const rootStore = useRootStore()
 const router = useRouter()
 
@@ -102,7 +106,7 @@ const categoriesList = computed(() => categoryStore.categoriesList)
 const meta = computed(() => categoryStore.categoryMeta)
 
 const columns = [
-  { title: '', key: 'drag', align: 'center', width: 40, noResizable: true },
+  { title: '', key: 'drag', align: 'center', width: 64, noResizable: true },
   {
     title: 'Mã',
     key: 'code',
@@ -121,6 +125,12 @@ const columns = [
     align: 'left',
     isFilter: true,
     inputProps: { inputType: 'text' }
+  },
+  {
+    title: 'Danh mục cha',
+    key: 'parent_id',
+    width: 'lg',
+    inputProps: { inputType: 'select-search', data: { defaultData: 'category' } }
   },
   {
     title: 'Mô tả nhãn hiệu',
@@ -156,7 +166,16 @@ const columns = [
 
 onMounted(() => {
   initData()
+  selectDataStore.getCategoryList()
 })
+
+const getParentName = (parentId: any) => {
+  if (!parentId) return '-'
+  const item = selectDataStore.selectList.category.find((e) =>
+    typeof e == 'string' ? e == parentId : e?.value == parentId
+  )
+  return (typeof item == 'string' ? item : item?.label) || '-'
+}
 
 const tableLoading = ref(false)
 const sortLoading = ref(false)
@@ -179,10 +198,16 @@ const handleReorder = (newList: any[]) => {
   hasOrderChanged.value = true
 }
 
+const flattenCategories = (list: any[]): { id: any }[] =>
+  list.flatMap((category) => [
+    { id: category.id },
+    ...(category.children?.length ? flattenCategories(category.children) : [])
+  ])
+
 const handleSaveSort = async () => {
   try {
     sortLoading.value = true
-    await sortCategory(categoriesList.value.map((category) => ({ id: category.id })))
+    await sortCategory(flattenCategories(categoriesList.value))
     handle_success('Lưu thứ tự thành công')
     hasOrderChanged.value = false
     await initData()
