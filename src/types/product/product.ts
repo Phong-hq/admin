@@ -7,6 +7,7 @@ export type PRODUCT_RESPONSE = PRODUCT_VARIANTS_RESPONSE & {
   product_options: OPTION[]
   brand: BRAND_RESPONSE
   category: CATEGORY_RESPONSE
+  sub_category: CATEGORY_RESPONSE | null
   allow_sell: number
   description: string
   dimension: string
@@ -68,6 +69,7 @@ export type PRODUCT_VARIANTS_REQUEST = Nullable<{
   description: string
   bar_code: string
   category_id: number
+  sub_category_id: number | null
   dimension: string
   has_tax: number
   images: string[]

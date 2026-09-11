@@ -11,22 +11,35 @@
     autocomplete="off"
   >
     <a-form-item class="!col-span-2" label="Danh mục:" name="category_id">
-      <div></div>
-      <!--      <c-select-search-and-plus :search-config="{ search: searchCategoryList, placeholder: 'Chọn danh mục', d}" />-->
       <div class="flex-center gap-2">
-        <c-select-search
-          :search="searchCategoryList"
+        <c-select
+          :data="categoryOptions"
           v-model:value="formState.category_id"
+          has-search
           placeholder="Chọn danh mục"
-          default-data="category"
           @change="handleCategoryChange"
         />
-        <add-category-drawer>
+        <add-category-drawer @get-data="fetchCategoryTree">
           <template #button>
             <create-button />
           </template>
         </add-category-drawer>
       </div>
+    </a-form-item>
+
+    <a-form-item
+      class="!col-span-2"
+      label="Danh mục con:"
+      name="sub_category_id"
+      v-if="hasChildren"
+    >
+      <c-select
+        :data="subCategoryOptions"
+        v-model:value="formState.sub_category_id"
+        has-search
+        placeholder="Chọn danh mục con"
+        @change="handleSubCategoryChange"
+      />
     </a-form-item>
 
     <a-form-item class="!col-span-2" label="Nhà cung cấp" name="suppliers">
@@ -41,16 +54,14 @@
 
     <a-form-item class="!col-span-2" label="Nhãn hiệu" name="brand_id">
       <div class="flex-center gap-2">
-        <c-select-search
-          :search="searchBrandByCategoryList"
-          :params="brandParams"
-          :extra-data="brandExtraData"
-          :disabled="!formState.category_id"
-          :placeholder="formState.category_id ? 'Chọn nhãn hiệu' : 'Chọn danh mục trước'"
+        <c-select
+          :data="brandOptions"
+          :disabled="!formState.category_id || (hasChildren && !formState.sub_category_id)"
+          :placeholder="brandPlaceholder"
+          has-search
           v-model:value="formState.brand_id"
-          default-data=""
         />
-        <add-brand-drawer>
+        <add-brand-drawer @get-data="fetchCategoryTree">
           <template #button>
             <create-button />
           </template>
@@ -80,9 +91,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { handle_error, handle_success } from '@/utils/message'
 import type { SelectConfigItem } from '@/types/index'
+import type { CATEGORY_RESPONSE } from '@/types/product/category'
 
 //COMPONENTS
 import CSelect from '@/components/common/select/CSelect.vue'
@@ -91,6 +103,7 @@ import CImage from '@/components/common/upload/CImage.vue'
 
 //PINIA
 import { useSelectDataStore } from '@/stores/select_data'
+import { useCategoryStore } from '@/stores/category'
 import AddCategoryDrawer from '@/views/category/AddCategoryDrawer.vue'
 import CreateButton from '@/components/common/button/CreateButton.vue'
 import CSelectSearchAndPlus from '@/components/common/select/CSelectSearchAndPlus.vue'
@@ -98,11 +111,11 @@ import AddBrandDrawer from '@/views/brand/AddBrandDrawer.vue'
 
 type FORM = {
   brand_id: number | null
-  brand_data?: SelectConfigItem | null
   suppliers: any
   tags: string[]
   images: string[]
   category_id: number | null
+  sub_category_id: number | null
 }
 
 type Props = {
@@ -117,10 +130,10 @@ const emits = defineEmits<{
 }>()
 
 const selectDataStore = useSelectDataStore()
+const categoryStore = useCategoryStore()
 
-const { searchBrandByCategoryList, searchCategoryList, searchSupplierList } = selectDataStore
+const { searchSupplierList } = selectDataStore
 
-const select_data = computed(() => selectDataStore.selectList)
 const formState = computed<FORM>({
   set(value: FORM) {
     emits('updateModelValue', value)
@@ -130,22 +143,90 @@ const formState = computed<FORM>({
   }
 })
 
-// Nhãn hiệu phụ thuộc danh mục: chỉ load list khi đã chọn danh mục
-const brandParams = computed(() => ({ category_id: formState.value.category_id }))
+// icon danh mục/nhãn hiệu có 3 kiểu: string | false | string[]
+const resolveIcon = (icon: any): string | undefined => {
+  if (Array.isArray(icon)) return icon[0] || undefined
+  return icon || undefined
+}
 
-// Giữ label nhãn hiệu đang chọn khi mở form sửa
-const brandExtraData = computed<SelectConfigItem[]>(() =>
-  formState.value.brand_data ? [formState.value.brand_data] : []
+// Cây danh mục gốc + children + brands, lấy 1 lần để cascading category -> sub-category -> brand
+const categoryTree = ref<CATEGORY_RESPONSE[]>([])
+
+const fetchCategoryTree = async () => {
+  try {
+    const res = await categoryStore.getCategoryList({ status: 1, 'per-page': 50 })
+    categoryTree.value = res?.items || []
+  } catch (error) {
+    handle_error(error)
+  }
+}
+
+onMounted(fetchCategoryTree)
+
+const categoryOptions = computed<SelectConfigItem[]>(() =>
+  categoryTree.value.map((category) => ({ value: category.id, label: category.name || '' }))
 )
 
+const selectedCategory = computed<CATEGORY_RESPONSE | null>(
+  () => categoryTree.value.find((category) => category.id === formState.value.category_id) || null
+)
+
+const hasChildren = computed(() => (selectedCategory.value?.children?.length ?? 0) > 0)
+
+const subCategoryOptions = computed<SelectConfigItem[]>(() =>
+  (selectedCategory.value?.children ?? []).map((child) => ({
+    value: child.id,
+    label: child.name || ''
+  }))
+)
+
+const selectedSubCategory = computed<CATEGORY_RESPONSE | null>(
+  () =>
+    selectedCategory.value?.children?.find(
+      (child) => child.id === formState.value.sub_category_id
+    ) || null
+)
+
+// Nếu danh mục có con: nhãn hiệu lấy từ danh mục con đã chọn. Không có con: lấy từ chính danh mục.
+const brandSource = computed<CATEGORY_RESPONSE | null>(() =>
+  hasChildren.value ? selectedSubCategory.value : selectedCategory.value
+)
+
+const brandOptions = computed<SelectConfigItem[]>(() =>
+  (brandSource.value?.brands ?? []).map((brand) => ({
+    value: brand.id,
+    label: brand.name || '',
+    image: resolveIcon((brand as any).icon)
+  }))
+)
+
+const brandPlaceholder = computed(() => {
+  if (!formState.value.category_id) return 'Chọn danh mục trước'
+  if (hasChildren.value && !formState.value.sub_category_id) return 'Chọn danh mục con trước'
+  return 'Chọn nhãn hiệu'
+})
+
 const handleCategoryChange = () => {
+  formState.value.sub_category_id = null
   formState.value.brand_id = null
-  formState.value.brand_data = null
+}
+
+const handleSubCategoryChange = () => {
+  formState.value.brand_id = null
 }
 
 const rules = computed(() => {
   return {
-    category_id: [{ required: !props.isEdit, message: 'Danh mục phẩm bỏ trống!', trigger: 'blur' }]
+    category_id: [{ required: !props.isEdit, message: 'Danh mục phẩm bỏ trống!', trigger: 'blur' }],
+    sub_category_id: [
+      {
+        validator: (_rule: any, value: number | null) =>
+          hasChildren.value && !value
+            ? Promise.reject('Chọn danh mục con!')
+            : Promise.resolve(),
+        trigger: 'change'
+      }
+    ]
   }
 })
 
