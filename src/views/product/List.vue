@@ -5,6 +5,17 @@
       <div class="flex justify-between items-center flex-wrap mb-2 gap-2">
         <p class="heading-1 !mb-0 sm:w-auto w-full">Sản phẩm</p>
         <div class="sm:flex sm:justify-end grid grid-cols-1 gap-2 sm:w-auto w-full">
+          <a-button
+            danger
+            type="primary"
+            v-if="selectedRowKeys.length"
+            @click="handleRemoveSelectedProducts"
+          >
+            <template #icon>
+              <delete-outlined />
+            </template>
+            Xóa {{ selectedRowKeys.length }} sản phẩm
+          </a-button>
           <export-button :action="exportProduct" :params="currentParams" name="sản-phẩm" />
           <import-button :action="importProduct" @success="initData" />
           <a-button type="primary" @click="router.push({ name: 'product-create' })">
@@ -15,13 +26,15 @@
           </a-button>
         </div>
       </div>
+      <!-- bảng phiên bản (biến thể) đang tắt: mở lại bằng cách bỏ comment 2 prop expand bên dưới
+           và block #expandedRowRender ở cuối bảng -->
       <c-table-ant
         :columns="columns2"
         :data="productData"
         :meta="productMeta"
         primary-key="id"
-        expand-column
-        expand-title="test"
+        selection-column
+        v-model:selected-row-keys="selectedRowKeys"
         :loading="tableLoading"
         @get-data="initData"
         @start-edit-row="handleStartEditRow"
@@ -84,6 +97,7 @@
           </template>
         </template>
 
+        <!-- BẢNG PHIÊN BẢN - tạm ẩn, bỏ comment khi cần dùng lại
         <template #expandedRowRender="{ record }">
           <div class="w-full py-4">
             <c-table-ant
@@ -109,6 +123,7 @@
             </div>
           </div>
         </template>
+        -->
       </c-table-ant>
     </div>
   </div>
@@ -149,7 +164,8 @@ const rootStore = useRootStore()
 const selectDataStore = useSelectDataStore()
 const router = useRouter()
 
-const { getProductList, deleteProductItem, exportProduct, importProduct } = productStore
+const { getProductList, deleteProductItem, deleteProductItems, exportProduct, importProduct } =
+  productStore
 const { confirm } = rootStore
 
 const productData = computed(() => productStore.productList)
@@ -282,10 +298,12 @@ const tableLoading = ref(false)
 const editableRow = ref<any>({})
 const updateVariantModalRef = ref<InstanceType<typeof UpdateVariantModal> | null>(null)
 const currentParams = ref<any>()
+const selectedRowKeys = ref<any[]>([])
 
 const initData = async (param?: any) => {
   try {
     tableLoading.value = true
+    selectedRowKeys.value = []
     currentParams.value = param
     await getProductList(param)
   } catch (error) {
@@ -322,6 +340,23 @@ const handleRemoveProduct = async (data: any) => {
     })
     await deleteProductItem(data?.id)
     await initData()
+  } catch (error) {
+    handle_error(error)
+    tableLoading.value = false
+  }
+}
+
+const handleRemoveSelectedProducts = async () => {
+  try {
+    await rootStore.confirm({
+      bodyTitle: 'Xóa sản phẩm',
+      bodyMessage: `Bạn có chắc chắn muốn xóa <span class="font-bold">${selectedRowKeys.value.length}</span> sản phẩm đã chọn không?`,
+      confirmButtonText: 'Có',
+      cancelButtonText: 'không'
+    })
+    tableLoading.value = true
+    await deleteProductItems(selectedRowKeys.value)
+    await initData(currentParams.value)
   } catch (error) {
     handle_error(error)
     tableLoading.value = false

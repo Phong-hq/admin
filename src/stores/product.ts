@@ -107,6 +107,19 @@ export const useProductStore = defineStore('productStore', {
         }
       })
     },
+    deleteProductItems(ids: any[]): Promise<any> {
+      return new Promise<any>(async (resolve, reject) => {
+        try {
+          await Promise.all(
+            ids.map((id) => axios.post('/api/v1/admin/product/item/delete?id=' + id))
+          )
+          this.reloadSelectList()
+          resolve(true)
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     getVariantList(params?: any): Promise<DataWithMetaResponse<PRODUCT_VARIANTS_RESPONSE[]>> {
       return new Promise<DataWithMetaResponse<PRODUCT_VARIANTS_RESPONSE[]>>(
         async (resolve, reject) => {
