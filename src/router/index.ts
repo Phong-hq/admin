@@ -158,7 +158,7 @@ const router = createRouter({
               component: () => import('@/views/inventory/List.vue'),
               meta: {
                 breadcrumb: [{ label: 'Kho' }, { label: 'Quản lí kho' }]
-              } as RouteMeta,
+              } as RouteMeta
             },
             {
               path: '/inventory/history/:id',
@@ -171,7 +171,7 @@ const router = createRouter({
                   { label: 'Lịch sử' }
                 ]
               } as RouteMeta
-            },
+            }
           ]
         },
         // {
@@ -431,7 +431,7 @@ const router = createRouter({
               component: () => import('@/views/setting/Setting.vue'),
               meta: {
                 breadcrumb: [{ label: 'Cấu hình' }]
-              } as RouteMeta,
+              } as RouteMeta
             },
             {
               path: '/setting/user/create',
@@ -500,7 +500,10 @@ const router = createRouter({
               name: 'setting-supplier',
               component: () => import('@/views/setting/supplier/Supplier.vue'),
               meta: {
-                breadcrumb: [{ label: 'Cấu hình', router: '/setting/list' }, { label: 'Nhà cung cấp' }]
+                breadcrumb: [
+                  { label: 'Cấu hình', router: '/setting/list' },
+                  { label: 'Nhà cung cấp' }
+                ]
               } as RouteMeta
             },
             {
@@ -508,7 +511,10 @@ const router = createRouter({
               name: 'setting-delivery-fee',
               component: () => import('@/views/setting/delivery-fee/DeliveryFee.vue'),
               meta: {
-                breadcrumb: [{ label: 'Cấu hình', router: '/setting/list' }, { label: 'Phí vận chuyển' }]
+                breadcrumb: [
+                  { label: 'Cấu hình', router: '/setting/list' },
+                  { label: 'Phí vận chuyển' }
+                ]
               } as RouteMeta
             },
             {
@@ -528,8 +534,7 @@ const router = createRouter({
               } as RouteMeta
             }
           ]
-        },
-
+        }
       ]
     },
     {
@@ -538,6 +543,14 @@ const router = createRouter({
       component: () => import('@/views/quick-upload/Index.vue'),
       meta: {
         breadcrumb: [{ label: 'Tải hình nhanh' }]
+      } as RouteMeta
+    },
+    {
+      path: '/clear-sub-category',
+      name: 'clear-sub-category',
+      component: () => import('@/views/tools/ClearSubCategory.vue'),
+      meta: {
+        breadcrumb: [{ label: 'Dọn sub_category' }]
       } as RouteMeta
     },
     {
