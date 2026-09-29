@@ -120,12 +120,22 @@ const columns = [
     isFilter: true,
     width: 200
   },
+  // {
+  //   title: 'Khách hàng',
+  //   key: {
+  //     name: 'client_name',
+  //     value: 'client,id',
+  //     label: 'client,name'
+  //   },
+  //   inputProps: { inputType: 'text' },
+  //   isFilter: true
+  // },
   {
-    title: 'Khách hàng',
+    title: 'Người nhận',
     key: {
-      name: 'client_name',
-      value: 'client,id',
-      label: 'client,name'
+      name: 'shipping_address',
+      value: 'shipping_address,name',
+      label: 'shipping_address,name'
     },
     inputProps: { inputType: 'text' },
     isFilter: true
