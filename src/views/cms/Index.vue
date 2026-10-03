@@ -7,8 +7,8 @@
       @create-collection="addCollectionDrawerRef?.show()"
       @getData="initData"
     />
-    <div class="grow overflow-hidden relative p-7">
-      <div class="flex justify-between mb-2">
+    <div class="grow flex flex-col overflow-hidden relative p-7">
+      <div class="flex justify-between mb-2 shrink-0">
         <div class="flex items-center gap-4">
           <p class="heading-1">{{ currentCollection?.name }}</p>
           <a-dropdown class="mb-4">
@@ -43,7 +43,7 @@
           </a-button>
         </div>
       </div>
-      <div class="w-full overflow-auto relative">
+      <div class="w-full grow min-h-0 overflow-auto relative">
         <div class="w-max min-w-[calc(100%_-_10px)]">
           <c-table
             class="w-max min-w-full"
@@ -114,7 +114,7 @@
           </c-table>
         </div>
       </div>
-      <div class="py-7 flex justify-end">
+      <div class="py-7 flex justify-end shrink-0">
         <a-pagination
           :current="recordsMeta?.currentPage"
           :total="recordsMeta?.totalCount"
@@ -178,6 +178,8 @@ const currentCollection = computed<COLLECTION_RESPONSE | null>(() => {
 })
 
 const column = computed<COLUMN_TYPE[]>(() => {
+  console.log(currentCollection.value);
+  
   if (!currentCollection.value || !collections.value?.length) return []
   const schemas = currentCollection.value.schemas
   if (schemas?.length) {

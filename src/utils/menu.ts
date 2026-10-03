@@ -125,6 +125,12 @@ export const listMenu = [
         'quick-upload-group',
         [getItem('Tải hình nhanh', 'quick-upload')],
         'group'
+      ),
+      getItem(
+        'Dọn sub_category',
+        'clear-sub-category-group',
+        [getItem('Dọn sub_category', 'clear-sub-category')],
+        'group'
       )
     ]
   }

@@ -27,12 +27,7 @@
       </div>
     </a-form-item>
 
-    <a-form-item
-      class="!col-span-2"
-      label="Danh mục con:"
-      name="sub_category_id"
-      v-if="hasChildren"
-    >
+    <a-form-item class="!col-span-2" label="Danh mục con:" name="sub_category_id">
       <c-select
         :data="subCategoryOptions"
         v-model:value="formState.sub_category_id"
