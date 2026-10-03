@@ -59,6 +59,7 @@
           :disabled="!formState.category_id || (hasChildren && !formState.sub_category_id)"
           :placeholder="brandPlaceholder"
           has-search
+          :filter-option="filterBrandOption"
           v-model:value="formState.brand_id"
         />
         <add-brand-drawer @get-data="fetchCategoryTree">
@@ -93,6 +94,7 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { handle_error, handle_success } from '@/utils/message'
+import { formatSlug } from '@/utils/string-helper'
 import type { SelectConfigItem } from '@/types/index'
 import type { CATEGORY_RESPONSE } from '@/types/product/category'
 
@@ -199,6 +201,14 @@ const brandOptions = computed<SelectConfigItem[]>(() =>
     image: resolveIcon((brand as any).icon)
   }))
 )
+
+// Search nhãn hiệu phía client theo tên (không dấu, không phân biệt hoa thường)
+const filterBrandOption = (input: string, option: any) => {
+  const keyword = formatSlug(input)
+  if (!keyword) return true
+  const brand = brandOptions.value.find((item) => item.value === option?.value)
+  return formatSlug(String(brand?.label ?? '')).includes(keyword)
+}
 
 const brandPlaceholder = computed(() => {
   if (!formState.value.category_id) return 'Chọn danh mục trước'

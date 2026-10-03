@@ -18,6 +18,7 @@ export type PRODUCT_RESPONSE = PRODUCT_VARIANTS_RESPONSE & {
   additional_data: { name: string; value: string }[]
   bar_code: string
   compare_price: null | number
+  is_contact_price: number
 }
 
 export type PRODUCT_VARIANTS_RESPONSE = Nullable<{
@@ -86,4 +87,5 @@ export type PRODUCT_VARIANTS_REQUEST = Nullable<{
   updated_at: string
   weight: string
   weight_type: string
+  is_contact_price: number
 }>

@@ -34,6 +34,11 @@
     >
       <a-input v-model:value="formState.compare_price" />
     </a-form-item>
+    <a-form-item class="!col-span-2" label="Giá liên hệ" name="is_contact_price">
+      <c-checkbox-number v-model="formState.is_contact_price"
+        >Hiển thị "Liên hệ" thay cho giá (ẩn giá trên web, không cho mua online)</c-checkbox-number
+      >
+    </a-form-item>
 <!--    <a-form-item class="!col-span-2" label="Trạng thái" name="allow_sell">-->
 <!--      <a-checkbox :checked="formState.allow_sell == 1" @change="handleCheckChange"-->
 <!--        >Có thể bán</a-checkbox-->
@@ -48,6 +53,7 @@ import { currencyInput, currencyNumber } from '@/utils/currency'
 
 //COMPONENTS
 import CSelect from '@/components/common/select/CSelect.vue'
+import CCheckboxNumber from '@/components/common/checkbox/CCheckboxNumber.vue'
 
 //PINIA
 import { useSelectDataStore } from '@/stores/select_data'
@@ -56,6 +62,7 @@ type FORM = {
   unit_price: string
   sll_price: string
   compare_price: string
+  is_contact_price: number
   // allow_sell: number
 }
 

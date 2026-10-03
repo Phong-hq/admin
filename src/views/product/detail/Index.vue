@@ -196,6 +196,7 @@ const priceState = reactive({
   sll_price: '0',
   unit_price: '0',
   compare_price: '',
+  is_contact_price: 0
   // allow_sell: 0
 })
 
@@ -254,6 +255,7 @@ const productVariantsDataRef = ref<InstanceType<typeof ProductVariantsData> | nu
 const onFinish = async (values: any) => {
   try {
     await checkFormValidate()
+    await checkZeroPriceConfirm()
     submitLoading.value = true
     let data = {
       ...infoState,
@@ -261,6 +263,7 @@ const onFinish = async (values: any) => {
       ...subDataState,
       ...priceState,
       ...warehouseState,
+      is_contact_price: priceState.is_contact_price ? 1 : 0,
       variants: productVariantsDataRef.value?.getVariantsData() || [],
       product_options: productVariantsDataRef.value?.getOptionsData() || [],
       additional_data: additional_data.value
@@ -292,6 +295,23 @@ const checkFormValidate = async () => {
   await productPriceRef.value?.validate()
 }
 
+// Giá 0 + không tick "Giá liên hệ" + đang bán ⇒ web sẽ bán 0đ thật, hỏi lại.
+const checkZeroPriceConfirm = async () => {
+  if (
+    currencyNumber(priceState.unit_price) === 0 &&
+    !priceState.is_contact_price &&
+    infoState.allow_sell === 1
+  ) {
+    await rootStore.confirm({
+      bodyTitle: 'Xác nhận giá 0đ',
+      bodyMessage:
+        'Giá 0đ và không phải giá liên hệ — web sẽ <span class="font-bold">BÁN 0đ</span>. Tiếp tục?',
+      confirmButtonText: 'Tiếp tục',
+      cancelButtonText: 'Hủy'
+    })
+  }
+}
+
 const fillFormData = async (res: PRODUCT_RESPONSE) => {
   if (!res) return
   name.value = res.name || ''
@@ -312,6 +332,7 @@ const fillFormData = async (res: PRODUCT_RESPONSE) => {
   priceState.sll_price = currencyInput(res.sll_price) || '0'
   priceState.unit_price = currencyInput(res.unit_price) || '0'
   priceState.compare_price = res.compare_price ? currencyInput(res.compare_price) : ''
+  priceState.is_contact_price = res.is_contact_price ? 1 : 0
   // priceState.allow_sell = res.allow_sell || 0
 
   warehouseState.weight = Number(res.weight) || 0
