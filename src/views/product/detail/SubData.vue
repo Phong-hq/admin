@@ -189,7 +189,7 @@ const brandSource = computed<CATEGORY_RESPONSE | null>(() =>
   hasChildren.value ? selectedSubCategory.value : selectedCategory.value
 )
 
-const brandOptions = computed<SelectConfigItem[]>(() =>
+const brandOptions = computed<{value: any, label: string}[]>(() =>
   (brandSource.value?.brands ?? []).map((brand) => ({
     value: brand.id,
     label: brand.name || '',
@@ -201,7 +201,7 @@ const brandOptions = computed<SelectConfigItem[]>(() =>
 const filterBrandOption = (input: string, option: any) => {
   const keyword = formatSlug(input)
   if (!keyword) return true
-  const brand = brandOptions.value.find((item) => item.value === option?.value)
+  const brand = brandOptions.value.find((item) => item?.value === option?.value)
   return formatSlug(String(brand?.label ?? '')).includes(keyword)
 }
 
