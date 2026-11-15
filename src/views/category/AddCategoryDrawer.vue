@@ -36,6 +36,14 @@
           <a-input v-model:value="formState.name" />
         </a-form-item>
 
+        <a-form-item class="!col-span-2" label="Slug (đường dẫn)" name="slug">
+          <c-slug-input
+            v-model="formState.slug"
+            :original="originalSlug"
+            :prefix="formState.parent_id ? '/category/…/' : '/category/'"
+          />
+        </a-form-item>
+
         <a-form-item class="!col-span-2" label="Mã danh mục" name="code">
           <a-input v-model:value="formState.code" />
         </a-form-item>
@@ -148,6 +156,7 @@ import CCheckboxNumber from '@/components/common/checkbox/CCheckboxNumber.vue'
 import CSelectSearch from '@/components/common/select/CSelectSearch.vue'
 import AddBrandDrawer from '@/views/brand/AddBrandDrawer.vue'
 import CreateButton from '@/components/common/button/CreateButton.vue'
+import CSlugInput from '@/components/common/input/CSlugInput.vue'
 
 //PINIA
 import { useCategoryStore } from '@/stores/category'
@@ -187,6 +196,7 @@ const isEdit = computed(() => formState.id != null)
 type FORM = {
   id: number | null
   name: string
+  slug: string
   code: string
   description: string
   status: number
@@ -204,6 +214,7 @@ type CATEGORY_PAYLOAD = Omit<FORM, 'brands_data' | 'icon' | 'brands'> & {
 const formState = reactive<FORM>({
   id: null,
   name: '',
+  slug: '',
   code: '',
   description: '',
   status: 0,
@@ -212,6 +223,8 @@ const formState = reactive<FORM>({
   brands_data: [],
   parent_id: null
 })
+// Slug đang lưu (khi sửa) -- để cảnh báo nếu người dùng đổi đường dẫn đã có.
+const originalSlug = ref('')
 
 const selectedIcon = computed(() => CATEGORY_ICONS[formState.icon] || '')
 
@@ -265,6 +278,8 @@ const reset = (data?: any) => {
   isQuickCreate.value = false
   if (data) formState.id = data?.id
   formState.name = data?.name || ''
+  formState.slug = data?.slug || ''
+  originalSlug.value = data?.slug || ''
   formState.code = data?.code || ''
   formState.description = data?.description || ''
   const iconKey = Array.isArray(data?.icon) ? data.icon[0] : data?.icon

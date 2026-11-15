@@ -18,7 +18,7 @@
             </div>
           </div>
         </div>
-        <product-info ref="productInfoRef" v-model="infoState" />
+        <product-info ref="productInfoRef" v-model="infoState" :original-slug="originalSlug" />
       </div>
       <div class="page-box-white">
         <p class="heading-1">Giá sản phẩm</p>
@@ -175,8 +175,11 @@ const infoState = reactive({
   sku: getRandomDigits(9),
   bar_code: getRandomDigits(10),
   name: '',
+  slug: '',
   allow_sell: 0
 })
+// Slug đang lưu (khi sửa) -- để cảnh báo nếu người dùng đổi đường dẫn đã có.
+const originalSlug = ref('')
 
 const noteState = reactive({
   description: '',
@@ -321,6 +324,8 @@ const fillFormData = async (res: PRODUCT_RESPONSE) => {
   noteState.description = res.description || ''
   noteState.short_description = res.short_description || ''
   infoState.name = res.name || ''
+  infoState.slug = res.slug || ''
+  originalSlug.value = res.slug || ''
 
   subDataState.brand_id = res.brand?.id || null
   subDataState.category_id = res.category?.id || null

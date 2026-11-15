@@ -39,6 +39,10 @@
           <a-input v-model:value="formState.name" />
         </a-form-item>
 
+        <a-form-item class="!col-span-2" label="Slug (đường dẫn)" name="slug">
+          <c-slug-input v-model="formState.slug" :original="originalSlug" prefix="/brand/" />
+        </a-form-item>
+
         <a-form-item class="!col-span-2" label="Mã nhãn hiệu" name="code">
           <a-input v-model:value="formState.code" />
         </a-form-item>
@@ -103,6 +107,7 @@ import CSelect from '@/components/common/select/CSelect.vue'
 import CSelectSearch from '@/components/common/select/CSelectSearch.vue'
 import { AddCategoryDrawerAsync as AddCategoryDrawer } from '@/views/lazyDrawers'
 import CreateButton from '@/components/common/button/CreateButton.vue'
+import CSlugInput from '@/components/common/input/CSlugInput.vue'
 
 //PINIA
 import { useBrandStore } from '@/stores/brand'
@@ -132,6 +137,7 @@ const isEdit = computed(() => formState.id != null)
 const formState = reactive({
   id: null as null | number,
   name: '',
+  slug: '',
   code: '',
   description: '',
   status: 0,
@@ -139,6 +145,8 @@ const formState = reactive({
   icon: [] as string[],
   categories: []
 })
+// Slug đang lưu (khi sửa) -- để cảnh báo nếu người dùng đổi đường dẫn đã có.
+const originalSlug = ref('')
 
 const open = ref<boolean>(false)
 const loading = ref<boolean>(false)
@@ -186,6 +194,8 @@ const reset = (data?: any) => {
   isQuickCreate.value = false
   if (data) formState.id = data?.id
   formState.name = data?.name || ''
+  formState.slug = data?.slug || ''
+  originalSlug.value = data?.slug || ''
   formState.code = data?.code || ''
   formState.description = data?.description || ''
   formState.icon = data?.icon || []

@@ -14,6 +14,10 @@
       <a-input v-model:value="formState.name" />
     </a-form-item>
 
+    <a-form-item class="!col-span-2" label="Slug (đường dẫn)" name="slug">
+      <c-slug-input v-model="formState.slug" :original="originalSlug" prefix="/products/" />
+    </a-form-item>
+
     <a-form-item class="sm:!col-span-1 !col-span-2" label="SKU" name="sku">
       <c-random-number v-model="formState.sku" :length="9" />
     </a-form-item>
@@ -40,12 +44,14 @@ import { ReloadOutlined } from '@ant-design/icons-vue'
 import CEditor from '@/components/common/editor/CEditor.vue'
 import CRandomNumber from '@/components/common/input/CRandomNumber.vue'
 import CCheckboxNumber from '@/components/common/checkbox/CCheckboxNumber.vue'
+import CSlugInput from '@/components/common/input/CSlugInput.vue'
 
 //PINIA
 
 type FORM = {
   bar_code: string
   name: string
+  slug: string
   sku: string
   allow_sell: number
 }
@@ -53,6 +59,8 @@ type FORM = {
 type Props = {
   modelValue: FORM
   isEdit?: boolean
+  // Slug đang lưu (khi sửa) -- để cảnh báo nếu người dùng đổi đường dẫn đã có.
+  originalSlug?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {})
