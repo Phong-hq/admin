@@ -35,6 +35,15 @@
 
         <product-additional-data v-model="additional_data" />
       </div>
+      <div class="page-box-white">
+        <p class="heading-1 mb-2">SEO (hiển thị trên Google)</p>
+        <p class="sub-heading">Để trống thì website tự tạo từ tên, giá và mô tả sản phẩm.</p>
+        <c-seo-meta-inputs
+          v-model:title="seoState.meta_title"
+          v-model:description="seoState.meta_description"
+          :title-placeholder="infoState.name ? `${infoState.name} chính hãng, giá tốt` : undefined"
+        />
+      </div>
       <!-- <div class="page-box-white">
         <p class="heading-1 mb-2">Thuộc tính</p>
         <p class="sub-heading">
@@ -122,6 +131,7 @@ import { useSelectDataStore } from '@/stores/select_data'
 //UTILS
 import { currencyInput, currencyNumber } from '@/utils/currency'
 import Note from '@/views/product/detail/Note.vue'
+import CSeoMetaInputs from '@/components/common/input/CSeoMetaInputs.vue'
 
 const emits = defineEmits<{
   (e: 'getData'): void
@@ -184,6 +194,12 @@ const originalSlug = ref('')
 const noteState = reactive({
   description: '',
   short_description: ''
+})
+
+// Meta SEO admin nhập tay. Gửi chuỗi rỗng = xoá, backend lưu NULL và website tự tạo lại.
+const seoState = reactive({
+  meta_title: '',
+  meta_description: ''
 })
 
 const subDataState = reactive({
@@ -263,6 +279,7 @@ const onFinish = async (values: any) => {
     let data = {
       ...infoState,
       ...noteState,
+      ...seoState,
       ...subDataState,
       ...priceState,
       ...warehouseState,
@@ -325,6 +342,8 @@ const fillFormData = async (res: PRODUCT_RESPONSE) => {
   noteState.short_description = res.short_description || ''
   infoState.name = res.name || ''
   infoState.slug = res.slug || ''
+  seoState.meta_title = res.meta_title || ''
+  seoState.meta_description = res.meta_description || ''
   originalSlug.value = res.slug || ''
 
   subDataState.brand_id = res.brand?.id || null

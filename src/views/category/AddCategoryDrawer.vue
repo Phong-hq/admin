@@ -61,6 +61,17 @@
           <a-textarea class="!min-h-[100px]" v-model:value="formState.description" auto-size />
         </a-form-item>
 
+        <a-form-item class="!col-span-2" label="SEO (hiển thị trên Google)">
+          <c-seo-meta-inputs
+            v-model:title="formState.meta_title"
+            v-model:description="formState.meta_description"
+          />
+        </a-form-item>
+
+        <a-form-item class="!col-span-2" label="Nội dung giới thiệu (dưới danh sách sản phẩm trang /category/…)" name="seo_content">
+          <c-editor v-model="formState.seo_content" />
+        </a-form-item>
+
         <a-form-item class="!col-span-2" label="Chọn nhãn hiệu" name="brands">
           <div class="flex flex-col gap-2">
             <div
@@ -157,6 +168,8 @@ import CSelectSearch from '@/components/common/select/CSelectSearch.vue'
 import AddBrandDrawer from '@/views/brand/AddBrandDrawer.vue'
 import CreateButton from '@/components/common/button/CreateButton.vue'
 import CSlugInput from '@/components/common/input/CSlugInput.vue'
+import CSeoMetaInputs from '@/components/common/input/CSeoMetaInputs.vue'
+import CEditor from '@/components/common/editor/CEditor.vue'
 
 //PINIA
 import { useCategoryStore } from '@/stores/category'
@@ -199,6 +212,9 @@ type FORM = {
   slug: string
   code: string
   description: string
+  meta_title: string
+  meta_description: string
+  seo_content: string
   status: number
   icon: string
   brands: (number | null)[]
@@ -217,6 +233,10 @@ const formState = reactive<FORM>({
   slug: '',
   code: '',
   description: '',
+  // SEO admin nhập tay. Gửi chuỗi rỗng = xoá, backend lưu NULL và website tự tạo lại.
+  meta_title: '',
+  meta_description: '',
+  seo_content: '',
   status: 0,
   icon: '',
   brands: [],
@@ -282,6 +302,9 @@ const reset = (data?: any) => {
   originalSlug.value = data?.slug || ''
   formState.code = data?.code || ''
   formState.description = data?.description || ''
+  formState.meta_title = data?.meta_title || ''
+  formState.meta_description = data?.meta_description || ''
+  formState.seo_content = data?.seo_content || ''
   const iconKey = Array.isArray(data?.icon) ? data.icon[0] : data?.icon
   formState.icon = typeof iconKey === 'string' && CATEGORY_ICONS[iconKey] ? iconKey : ''
   formState.brands = data?.brands?.map((brand: any) => brand?.id) || []

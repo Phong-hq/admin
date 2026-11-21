@@ -33,6 +33,8 @@ export type PRODUCT_VARIANTS_RESPONSE = Nullable<{
   sll_price: number
   quantity: number
   slug: string
+  meta_title?: string | null
+  meta_description?: string | null
   suppliers: { id: number; name: string }[]
   unit_price: number
   updated_at: string
