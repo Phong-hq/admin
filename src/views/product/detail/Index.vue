@@ -41,7 +41,7 @@
         <c-seo-meta-inputs
           v-model:title="seoState.meta_title"
           v-model:description="seoState.meta_description"
-          :title-placeholder="infoState.name ? `${infoState.name} chính hãng, giá tốt` : undefined"
+          :title-placeholder="infoState.name || undefined"
         />
       </div>
       <!-- <div class="page-box-white">
